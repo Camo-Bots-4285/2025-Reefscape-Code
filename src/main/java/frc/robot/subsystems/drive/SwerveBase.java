@@ -67,9 +67,13 @@ public class SwerveBase extends SubsystemBase {
     // private final GryroIOInputsAutoLogged _inputs = new GryroIOInputsAutoLogged();
 
     private final GyroIO gyroIO;
-    private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+    private final GyroIOInputs gyroInputs = new GyroIOInputs();
     private final SwerveModule[] modules = new SwerveModule[4]; // FL, FR, BL, BR
     private final SysIdRoutine sysId;
+
+
+    private final ModuleIO moduleIO;
+    private final ModuleIOInputsAutoLogged moduleInputs = new ModuleIOInputsAutoLogged();
 
 
     // Checks if setNeedMoreAmps is True of false and change need more
@@ -228,7 +232,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public void zeroPigeon() {
-        _io.zeroPigeon();
+        gyroIO.zeroPigeon();
     }
 
     /**
@@ -261,44 +265,44 @@ public class SwerveBase extends SubsystemBase {
      * measured CANCoder offset
      */
 
-    public final SwerveModule frontLeft = new SwerveModule(
+    // public final SwerveModule frontLeft = new SwerveModule(
             
-            Constants.SwerveConstants.frontLeftDriveMotorId,
-            Constants.SwerveConstants.frontLeft_Drive_kP,
-            Constants.SwerveConstants.frontLeftRotationMotorId,
-            Constants.SwerveConstants.frontLeft_Rotation_kP,
-            Constants.SwerveConstants.frontLeftRotationEncoderId,
-            frontLeftAngleOffset,
-            this);
+    //         Constants.SwerveConstants.frontLeftDriveMotorId,
+    //         Constants.SwerveConstants.frontLeft_Drive_kP,
+    //         Constants.SwerveConstants.frontLeftRotationMotorId,
+    //         Constants.SwerveConstants.frontLeft_Rotation_kP,
+    //         Constants.SwerveConstants.frontLeftRotationEncoderId,
+    //         frontLeftAngleOffset,
+    //         this);
 
-    public final SwerveModule frontRight = new SwerveModule(
-            Constants.SwerveConstants.frontRightDriveMotorId,
-            Constants.SwerveConstants.frontRight_Drive_kP,
-            Constants.SwerveConstants.frontRightRotationMotorId,
-            Constants.SwerveConstants.frontRight_Rotation_kP,
-            Constants.SwerveConstants.frontRightRotationEncoderId,
-            frontRightAngleOffset,
-            this);
+    // public final SwerveModule frontRight = new SwerveModule(
+    //         Constants.SwerveConstants.frontRightDriveMotorId,
+    //         Constants.SwerveConstants.frontRight_Drive_kP,
+    //         Constants.SwerveConstants.frontRightRotationMotorId,
+    //         Constants.SwerveConstants.frontRight_Rotation_kP,
+    //         Constants.SwerveConstants.frontRightRotationEncoderId,
+    //         frontRightAngleOffset,
+    //         this);
 
-    public final SwerveModule rearLeft = new SwerveModule(
+    // public final SwerveModule rearLeft = new SwerveModule(
         
-            Constants.SwerveConstants.rearLeftDriveMotorId,
-            Constants.SwerveConstants.rearLeft_Drive_kP,
-            Constants.SwerveConstants.rearLeftRotationMotorId,
-            Constants.SwerveConstants.rearLeft_Rotation_kP,
-            Constants.SwerveConstants.rearLeftRotationEncoderId,
-            rearLeftAngleOffset,
-            this);
+    //         Constants.SwerveConstants.rearLeftDriveMotorId,
+    //         Constants.SwerveConstants.rearLeft_Drive_kP,
+    //         Constants.SwerveConstants.rearLeftRotationMotorId,
+    //         Constants.SwerveConstants.rearLeft_Rotation_kP,
+    //         Constants.SwerveConstants.rearLeftRotationEncoderId,
+    //         rearLeftAngleOffset,
+    //         this);
 
-    public final SwerveModule rearRight = new SwerveModule(
+    // public final SwerveModule rearRight = new SwerveModule(
 
-            Constants.SwerveConstants.rearRightDriveMotorId,
-            Constants.SwerveConstants.rearRight_Drive_kP,
-            Constants.SwerveConstants.rearRightRotationMotorId,
-            Constants.SwerveConstants.rearRight_Rotation_kP,
-            Constants.SwerveConstants.rearRightRotationEncoderId,
-            rearRightAngleOffset,
-            this);
+    //         Constants.SwerveConstants.rearRightDriveMotorId,
+    //         Constants.SwerveConstants.rearRight_Drive_kP,
+    //         Constants.SwerveConstants.rearRightRotationMotorId,
+    //         Constants.SwerveConstants.rearRight_Rotation_kP,
+    //         Constants.SwerveConstants.rearRightRotationEncoderId,
+    //         rearRightAngleOffset,
+    //         this);
 
     /**
      * odometry for the robot, measured in meters for linear motion and radians for
@@ -339,13 +343,13 @@ public class SwerveBase extends SubsystemBase {
         SmartDashboard.putNumber("Bot Heading",
                 getHeading().getDegrees());
         SmartDashboard.putNumber("Pigeon Rotation",
-        _inputs._pigeonCompassHeading);
+        gyroInputs._pigeonCompassHeading);
         SmartDashboard.putNumber("Pigeon Yaw",
-        _inputs._pigeonSensorYaw);
+        gyroInputs._pigeonSensorYaw);
         SmartDashboard.putNumber("Pigeon Compass",
-        _inputs._pigeonCompassHeading);
+        gyroInputs._pigeonCompassHeading);
 
-        SmartDashboard.putString("FL Wheel Angle", frontLeft.getCanCoderAngle().toString());
+        SmartDashboard.putString("FL Wheel Angle", moduleInputs._turnAbsolutePosition.toString());
         SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
         SmartDashboard.putString("RL Wheel Angle", rearLeft.getCanCoderAngle().toString());
         SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
@@ -390,7 +394,7 @@ public class SwerveBase extends SubsystemBase {
         // pigeon yaw not going back to normal after
         if (needPigeonReset) {
             needPigeonReset = false;
-            _io.setHeadingForward();
+            gyroIO.setHeadingForward();
             isFieldRelative1 = true;
         }
 
@@ -422,7 +426,7 @@ public class SwerveBase extends SubsystemBase {
 
     public Rotation2d getGyroscopeRotation() {
 
-        return Rotation2d.fromDegrees(_inputs._pigeonCompassHeading);
+        return Rotation2d.fromDegrees(gyroInputs._pigeonCompassHeading);
 
     }
 
@@ -504,7 +508,7 @@ public class SwerveBase extends SubsystemBase {
     public Rotation2d getHeading() {
 
         return Rotation2d.fromDegrees(
-                _inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
+                gyroInputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
 
     }
 
@@ -514,10 +518,10 @@ public class SwerveBase extends SubsystemBase {
     // pigeon heading
     public Rotation2d getHeadingDrive() {
         if (isFieldRelative1 == true) {
-            return Rotation2d.fromDegrees(_inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
+            return Rotation2d.fromDegrees(gyroInputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
         }
         if (RobotState.isAutonomous()) {
-            return Rotation2d.fromDegrees(_inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
+            return Rotation2d.fromDegrees(gyroInputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
         } else {
             return Rotation2d.fromDegrees(Constants.SwerveConstants.NormalPigeonOfSet);
         }
@@ -531,10 +535,7 @@ public class SwerveBase extends SubsystemBase {
     // }
 
     public void stopModules() {
-        frontLeft.stop();
-        frontRight.stop();
-        rearRight.stop();
-        rearLeft.stop();
+    moduleIO.stop();
     }
 
 

@@ -4,12 +4,17 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 
 public class RealModuleIO implements ModuleIO {
@@ -28,6 +33,8 @@ public class RealModuleIO implements ModuleIO {
   private final StatusSignal<Double> turnVelocity;
   private final StatusSignal<Double> turnAppliedVolts;
   private final StatusSignal<Double> turnCurrent;
+
+  private final boolean isTurnMotorInverted = false;
 
     // public RealModuleIO(int driveMotorId, int rotateMotorId, Rotation2d encoderOffset) {
     //     _driveMotor = new TalonFX(driveMotorId, "rio");
@@ -69,12 +76,14 @@ public class RealModuleIO implements ModuleIO {
     _driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     _driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     _driveMotor.getConfigurator().apply(_driveConfig);
+    setDriveBrakeMode(true);
    
 
     var _turnConfig = new TalonFXConfiguration();
     _turnConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
     _turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     _rotateMotor.getConfigurator().apply(_turnConfig);
+     setTurnBrakeMode(true);
    // setTurnBrakeMode(true);
 
     _cancoder.getConfigurator().apply(new CANcoderConfiguration());
@@ -83,15 +92,14 @@ public class RealModuleIO implements ModuleIO {
     driveVelocity = _driveMotor.getVelocity();
     driveAppliedVolts = _driveMotor.getMotorVoltage();
     driveCurrent = _driveMotor.getSupplyCurrent();
-    setDriveBrakeMode(true);
-
+    
 
     turnAbsolutePosition = _cancoder.getAbsolutePosition();
     turnPosition = _rotateMotor.getPosition();
     turnVelocity = _rotateMotor.getVelocity();
     turnAppliedVolts = _rotateMotor.getMotorVoltage();
     turnCurrent = _rotateMotor.getSupplyCurrent();
-    setDriveBrakeMode(true);
+   
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         100.0, drivePosition, turnPosition); // Required for odometry, use faster rate
@@ -110,43 +118,97 @@ public class RealModuleIO implements ModuleIO {
 
     /** Updates the set of loggable inputs. */
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs._drivePositionRad = Units.rotationsToRadians(_driveMotor.getPosition().getValueAsDouble()) / SwerveConstants.driveGearRatio;
-        inputs._driveVelocityRadPerSec = Units.rotationsToRadians(_driveMotor.getVelocity().getValueAsDouble()) / SwerveConstants.driveGearRatio; 
-        inputs._driveAppliedVolts = _driveMotor.getMotorVoltage().getValueAsDouble();
-        inputs._driveCurrentAmps = _driveMotor.getStatorCurrent().getValueAsDouble();
+        BaseStatusSignal.refreshAll(
+        drivePosition,
+        driveVelocity,
+        driveAppliedVolts,
+        driveCurrent,
+        turnAbsolutePosition,
+        turnPosition,
+        turnVelocity,
+        turnAppliedVolts,
+        turnCurrent);
 
-        inputs._turnPosition = Rotation2d.fromRotations(_cancoder.getAbsolutePosition().getValueAsDouble()).minus(_encoderOffset);
-        inputs._turnVelocityRadPerSec = Units.rotationsToRadians(_rotateMotor.getVelocity().getValueAsDouble()) / SwerveConstants.angleGearRatio;
-        inputs._turnAppliedVolts = _rotateMotor.getMotorVoltage().getValueAsDouble();
-        inputs._turnCurrentAmps = _rotateMotor.getStatorCurrent().getValueAsDouble();
+
+
+    inputs._drivePositionRad =
+        Units.rotationsToRadians(drivePosition.getValueAsDouble()) / Constants.SwerveConstants.driveGearRatio;
+    inputs._driveVelocityRadPerSec =
+        Units.rotationsToRadians(driveVelocity.getValueAsDouble()) / Constants.SwerveConstants.driveGearRatio;
+    inputs._driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
+    inputs._driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
+
+    inputs._turnAbsolutePosition =
+        Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
+            .minus(_encoderOffset);
+    inputs._turnPosition =
+        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / Constants.SwerveConstants.turnGearRatio);
+    inputs._turnVelocityRadPerSec =
+        Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / Constants.SwerveConstants.turnGearRatio;
+    inputs._turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
+    inputs._turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
     }
 
-    /** Run the drive motor at the specified voltage. */
-    public void setDriveVoltage(double volts) {
-        _driveMotor.setVoltage(volts);
-    }
 
-    /** Run the turn motor at the specified voltage. */
-    public void setTurnVoltage(double volts) {
-        _rotateMotor.setVoltage(volts);
-    }
+      @Override
+  public void setDriveVoltage(double volts) {
+    _driveMotor.setControl(new VoltageOut(volts));
+  }
 
-    /** Enable or disable brake mode on the drive motor. */
-    public void setDriveConfig(CurrentLimitsConfigs config) {
-        _driveMotor.getConfigurator().apply(config);
-    }
+  @Override
+  public void setTurnVoltage(double volts) {
+   _rotateMotor.setControl(new VoltageOut(volts));
+  }
 
-    public void setRotateConfig(CurrentLimitsConfigs config) {
-        _rotateMotor.getConfigurator().apply(config);
-    }
+  @Override
+  public void setDriveBrakeMode(boolean enable) {
+    var config = new MotorOutputConfigs();
+    config.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    _driveMotor.getConfigurator().apply(config);
+  }
 
-    public void setDriveInverted(boolean inverted) {
-        _driveMotor.setInverted(inverted);
-    }
+  @Override
+  public void setTurnBrakeMode(boolean enable) {
+    var config = new MotorOutputConfigs();
+    config.Inverted =
+        isTurnMotorInverted
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    _rotateMotor.getConfigurator().apply(config);
+  }
 
-    public void setRotationInverted(boolean inverted) {
-        _rotateMotor.setInverted(inverted);
-    }
+    @Override
+  public void stop() {
+    _driveMotor.stopMotor();
+  }
+    // /** Run the drive motor at the specified voltage. */
+    // public void setDriveVoltage(double volts) {
+    //     _driveMotor.setVoltage(volts);
+    // }
+
+    // /** Run the turn motor at the specified voltage. */
+    // public void setTurnVoltage(double volts) {
+    //     _rotateMotor.setVoltage(volts);
+    // }
+
+    // /** Enable or disable brake mode on the drive motor. */
+    // public void setDriveConfig(CurrentLimitsConfigs config) {
+    //     _driveMotor.getConfigurator().apply(config);
+    // }
+
+    // public void setRotateConfig(CurrentLimitsConfigs config) {
+    //     _rotateMotor.getConfigurator().apply(config);
+    // }
+
+    // public void setDriveInverted(boolean inverted) {
+    //     _driveMotor.setInverted(inverted);
+    // }
+
+    // public void setRotationInverted(boolean inverted) {
+    //     _rotateMotor.setInverted(inverted);
+    // }
 
     public void resetDriveEncoder() {
         _driveMotor.setPosition(0);

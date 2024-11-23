@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 import frc.robot.Constants.SwerveConstants;
 
 public interface ModuleIO {
@@ -25,12 +27,13 @@ public interface ModuleIO {
     public double _drivePositionRad = 0.0;
     public double _driveVelocityRadPerSec = 0.0;
     public double _driveAppliedVolts = 0.0;
-    public double _driveCurrentAmps = 0.0;
+    public double[] _driveCurrentAmps = new double[] {};
 
+    public Rotation2d _turnAbsolutePosition = new Rotation2d();
     public Rotation2d _turnPosition = new Rotation2d();
     public double _turnVelocityRadPerSec = 0.0;
     public double _turnAppliedVolts = 0.0;
-    public double _turnCurrentAmps = 0.0;
+    public double[] _turnCurrentAmps = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */
@@ -43,13 +46,12 @@ public interface ModuleIO {
   public default void setTurnVoltage(double volts) {}
 
   /** Enable or disable brake mode on the drive motor. */
-  public default void setDriveConfig(CurrentLimitsConfigs config) {}
+  public default void setDriveBrakeMode(boolean enable) {}
 
-  public default void setRotateConfig(CurrentLimitsConfigs config) {}
+  /** Enable or disable brake mode on the turn motor. */
+  public default void setTurnBrakeMode(boolean enable) {}
 
-  public default void setDriveInverted(boolean inverted) {}
-
-  public default void setRotationInverted(boolean inverted) {}
+  public default void stop() {}
 
   public default void resetDriveEncoder() {}
 }

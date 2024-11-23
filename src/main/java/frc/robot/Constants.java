@@ -212,7 +212,7 @@ import edu.wpi.first.math.util.Units;
 
     /* Gear Ratio */
     public static final double driveGearRatio = 5.14; // Mk4 drive ratio
-    public static final double angleGearRatio = 12.8; // Mk4 steer ratio   
+    public static final double turnGearRatio = 12.8; // Mk4 steer ratio   
     
     /* Swerve Profiling Values */
     public static final double maxSpeed = 6.03504;//In meter/Second 

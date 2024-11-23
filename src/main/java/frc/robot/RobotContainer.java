@@ -203,26 +203,26 @@ public class RobotContainer {
 
   case SIM:
     // Sim robot, instantiate physics sim IO implementations
-    m_swerveModule =
-        new Drive(
-            new GyroIO() {},
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim());
-    flywheel = new Flywheel(new FlywheelIOSim());
+    // m_swerveModule =
+    //     new Drive(
+    //         new GyroIO() {},
+    //         new ModuleIOSim(),
+    //         new ModuleIOSim(),
+    //         new ModuleIOSim(),
+    //         new ModuleIOSim());
+    // flywheel = new Flywheel(new FlywheelIOSim());
     break;
 
   default:
     // Replayed robot, disable IO implementations
-    drive =
-        new Drive(
-            new GyroIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {});
-    flywheel = new Flywheel(new FlywheelIO() {});
+    m_swerveBase =
+        new SwerveBase(
+            new RealGyroIO() {},
+            new RealModuleIO(1),
+            new RealModuleIO(2),
+            new RealModuleIO(3),
+            new RealModuleIO(4));
+    //flywheel = new Flywheel(new FlywheelIO() {});
     break;
 }
 

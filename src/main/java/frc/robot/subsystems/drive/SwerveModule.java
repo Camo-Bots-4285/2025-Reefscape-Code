@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.*;
+import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 
 public class SwerveModule extends SubsystemBase {
 
@@ -23,13 +24,9 @@ public class SwerveModule extends SubsystemBase {
     private PIDController _rotationController;
     private PIDController _driveController;
 
-    private final ModuleIO _io;
-    private final ModuleIOInputsAutoLogged _inputs = new ModuleIOInputsAutoLogged();
 
-
-
-    private final ModuleIO io;
-    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final ModuleIO moduleIO;
+    private final ModuleIOInputsAutoLogged moduleInputs = new ModuleIOInputsAutoLogged();
     private final int index;
 
 
@@ -39,7 +36,7 @@ public class SwerveModule extends SubsystemBase {
 
 
    public SwerveModule(ModuleIO io, int index) {
-    this.io = io;
+    this.moduleIO = io;
     this.index = index;
 
     // Switch constants based on mode (the physics simulator is treated as a
@@ -69,8 +66,8 @@ public class SwerveModule extends SubsystemBase {
 
  
   public void setBrakeMode(boolean enabled) {
-    io.setDriveBrakeMode(enabled);
-    io.setTurnBrakeMode(enabled);
+    moduleIO.setDriveBrakeMode(enabled);
+    moduleIO.setTurnBrakeMode(enabled);
   }
 
 
@@ -94,33 +91,33 @@ public class SwerveModule extends SubsystemBase {
     // }
 
     public void resetDistance() {
-        _io.resetDriveEncoder();
+        moduleIO.resetDriveEncoder();
     }
 
     public Double getDriveDistanceRadians() {
-        return _inputs._drivePositionRad;
+        return moduleInputs._drivePositionRad;
     }
 
     public Rotation2d getCanCoderAngle() {
-        double unsignedAngle = (_inputs._turnPosition.getRadians()) % (2 * Math.PI);
+        double unsignedAngle = (moduleInputs._turnPosition.getRadians()) % (2 * Math.PI);
 
         return new Rotation2d(unsignedAngle);
     }
 
     public Rotation2d getIntegratedAngle() {
-        return new Rotation2d((_inputs._turnPosition.getRadians()) % (2 * Math.PI));
+        return new Rotation2d((moduleInputs._turnPosition.getRadians()) % (2 * Math.PI));
     }
 
     public double getCurrentVelocityRadiansPerSecond() {
-        return _inputs._driveVelocityRadPerSec;
+        return moduleInputs._driveVelocityRadPerSec;
     }
 
     public double getCurrentVelocityMetersPerSecond() {
-        return _inputs._driveVelocityRadPerSec * SwerveConstants.wheelDiameter; // v = w*r
+        return moduleInputs._driveVelocityRadPerSec * SwerveConstants.wheelDiameter; // v = w*r
     }
 
     public double getCurrentDistanceMeters() {
-        return _inputs._drivePositionRad * SwerveConstants.wheelDiameter;
+        return moduleInputs._drivePositionRad * SwerveConstants.wheelDiameter;
     }
 
     // unwraps a target angle to be [0,2π]
@@ -145,10 +142,10 @@ public class SwerveModule extends SubsystemBase {
         SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(unoptimizedDesiredState, getState().angle);
         double angularSetPoint = optimizedDesiredState.angle.getRadians();
 
-        _io.setTurnVoltage(_rotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint)
+        moduleIO.setTurnVoltage(_rotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint)
                 / SwerveConstants.maxAngularVelocity);
 
-        _io.setDriveVoltage(-_driveController.calculate(optimizedDesiredState.speedMetersPerSecond)
+        moduleIO.setDriveVoltage(-_driveController.calculate(optimizedDesiredState.speedMetersPerSecond)
                 / SwerveConstants.maxSpeed * SwerveConstants.calibrationFactorSB);
 
         // TODO: I wouldn't suggest setting configs for the drive controller in something running for a 20ms cycle. Configs can really slow down cycle time. You should do this once in your constructor (see https://v6.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/configuration.html)
@@ -177,8 +174,8 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public void stop() {
-        _io.setDriveVoltage(0);
-        _io.setTurnVoltage(0);
+        moduleIO.setDriveVoltage(0);
+        moduleIO.setTurnVoltage(0);
     }
 
     public SwerveModuleState getState() {
