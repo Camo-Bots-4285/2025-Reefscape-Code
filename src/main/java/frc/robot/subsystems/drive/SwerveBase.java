@@ -30,6 +30,8 @@ import com.revrobotics.SparkPIDController;
 
 import java.sql.Driver;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
@@ -109,31 +111,33 @@ public class SwerveBase extends SubsystemBase {
 
         odometry.resetPosition(new Rotation2d(), getModulePositions(), new Pose2d());
 
-        // initialize the rotation offsets for the CANCoders
-        frontLeft.initRotationOffset();
-        frontRight.initRotationOffset();
-        rearLeft.initRotationOffset();
-        rearRight.initRotationOffset();
+        // // initialize the rotation offsets for the CANCoders
+        // frontLeft.initRotationOffset();
+        // frontRight.initRotationOffset();
+        // rearLeft.initRotationOffset();
+        // rearRight.initRotationOffset();
 
-        // reset the measured distance driven for each module
-        frontLeft.resetDistance();
-        frontRight.resetDistance();
-        rearLeft.resetDistance();
-        rearRight.resetDistance();
+        // // reset the measured distance driven for each module
+        // frontLeft.resetDistance();
+        // frontRight.resetDistance();
+        // rearLeft.resetDistance();
+        // rearRight.resetDistance();
 
-        /* Change Driver Motor Derection */
-        // if true inverts the derection of the drive motor
-        rearRight.getDriveMotor().setInverted(true);
-        rearLeft.getDriveMotor().setInverted(false);
-        frontRight.getDriveMotor().setInverted(true);
-        frontLeft.getDriveMotor().setInverted(false);
+        // /* Change Driver Motor Derection */
+        // // if true inverts the derection of the drive motor
+        // rearRight.getDriveMotor().setInverted(true);
+        // rearLeft.getDriveMotor().setInverted(false);
+        // frontRight.getDriveMotor().setInverted(true);
+        // frontLeft.getDriveMotor().setInverted(false);
 
-        // if true inverts the derection of the rotation motor should not need to be
-        // changed
-        rearRight.getRotationMotor().setInverted(false);
-        rearLeft.getRotationMotor().setInverted(false);
-        frontRight.getRotationMotor().setInverted(false);
-        frontLeft.getRotationMotor().setInverted(false);
+        // // if true inverts the derection of the rotation motor should not need to be
+        // // changed
+        // rearRight.getRotationMotor().setInverted(false);
+        // rearLeft.getRotationMotor().setInverted(false);
+        // frontRight.getRotationMotor().setInverted(false);
+        // frontLeft.getRotationMotor().setInverted(false);
+
+        
 
 
 
@@ -349,24 +353,24 @@ public class SwerveBase extends SubsystemBase {
         SmartDashboard.putNumber("Pigeon Compass",
         gyroInputs._pigeonCompassHeading);
 
-        SmartDashboard.putString("FL Wheel Angle", moduleInputs._turnAbsolutePosition.toString());
-        SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
-        SmartDashboard.putString("RL Wheel Angle", rearLeft.getCanCoderAngle().toString());
-        SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
+        // SmartDashboard.putString("FL Wheel Angle", moduleInputs._turnAbsolutePosition.toString());
+        // SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
+        // SmartDashboard.putString("RL Wheel Angle", rearLeft.getCanCoderAngle().toString());
+        // SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
 
-        SmartDashboard.putNumber("FL Wheel Speed",
-                frontLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
-        SmartDashboard.putNumber("FR Wheel Speed",
-                frontRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
-        SmartDashboard.putNumber("RL Wheel Speed",
-                rearLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
-        SmartDashboard.putNumber("RR Wheel Speed",
-                rearRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
+        // SmartDashboard.putNumber("FL Wheel Speed",
+        //         frontLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
+        // SmartDashboard.putNumber("FR Wheel Speed",
+        //         frontRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
+        // SmartDashboard.putNumber("RL Wheel Speed",
+        //         rearLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
+        // SmartDashboard.putNumber("RR Wheel Speed",
+        //         rearRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
 
-        SmartDashboard.putNumber("FL Wheel Speed2", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
-        SmartDashboard.putNumber("FR Wheel Speed2", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
-        SmartDashboard.putNumber("RL Wheel Speed2", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
-        SmartDashboard.putNumber("RR Wheel Speed2", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
+        // SmartDashboard.putNumber("FL Wheel Speed2", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
+        // SmartDashboard.putNumber("FR Wheel Speed2", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
+        // SmartDashboard.putNumber("RL Wheel Speed2", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
+        // SmartDashboard.putNumber("RR Wheel Speed2", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
 
     }
 
@@ -449,35 +453,70 @@ public class SwerveBase extends SubsystemBase {
 
     }
 
-    // returns an array of SwerveModuleState
-    public SwerveModuleState[] getModuleStates() {
+    // // returns an array of SwerveModuleState
+    // public SwerveModuleState[] getModuleStates() {
 
-        SwerveModuleState[] states = {
-                new SwerveModuleState(frontLeft.getCurrentVelocityMetersPerSecond(), frontLeft.getIntegratedAngle()),
-                new SwerveModuleState(frontRight.getCurrentVelocityMetersPerSecond(), frontRight.getIntegratedAngle()),
-                new SwerveModuleState(rearLeft.getCurrentVelocityMetersPerSecond(), rearLeft.getIntegratedAngle()),
-                new SwerveModuleState(rearRight.getCurrentVelocityMetersPerSecond(), rearRight.getIntegratedAngle())
+    //     SwerveModuleState[] states = {
+    //             new SwerveModuleState(frontLeft.getCurrentVelocityMetersPerSecond(), frontLeft.getIntegratedAngle()),
+    //             new SwerveModuleState(frontRight.getCurrentVelocityMetersPerSecond(), frontRight.getIntegratedAngle()),
+    //             new SwerveModuleState(rearLeft.getCurrentVelocityMetersPerSecond(), rearLeft.getIntegratedAngle()),
+    //             new SwerveModuleState(rearRight.getCurrentVelocityMetersPerSecond(), rearRight.getIntegratedAngle())
 
-        };
+    //     };
 
-        return states;
+    //     return states;
+    // }
 
+        // returns an array of SwerveModuleState Advatntage kit version
+        /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+
+    @AutoLogOutput(key = "SwerveStates/Measured")
+  private SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      states[i] = modules[i].getState();
     }
+    return states;
+  }
 
-    // returns an array of SwerveModulePositions
-    public SwerveModulePosition[] getModulePositions() {
 
-        SwerveModulePosition[] positions = {
-                new SwerveModulePosition(frontLeft.getCurrentDistanceMeters(), frontLeft.getIntegratedAngle()),
-                new SwerveModulePosition(frontRight.getCurrentDistanceMeters(),
-                        frontRight.getIntegratedAngle()),
-                new SwerveModulePosition(rearLeft.getCurrentDistanceMeters(), rearLeft.getIntegratedAngle()),
-                new SwerveModulePosition(rearRight.getCurrentDistanceMeters(), rearRight.getIntegratedAngle())
-        };
+    // // returns an array of SwerveModulePositions
+    // public SwerveModulePosition[] getModulePositions() {
 
-        return positions;
+    //     SwerveModulePosition[] positions = {
+    //             new SwerveModulePosition(frontLeft.getCurrentDistanceMeters(), frontLeft.getIntegratedAngle()),
+    //             new SwerveModulePosition(frontRight.getCurrentDistanceMeters(),
+    //                     frontRight.getIntegratedAngle()),
+    //             new SwerveModulePosition(rearLeft.getCurrentDistanceMeters(), rearLeft.getIntegratedAngle()),
+    //             new SwerveModulePosition(rearRight.getCurrentDistanceMeters(), rearRight.getIntegratedAngle())
+    //     };
 
+    //     return positions;
+
+    // }
+
+
+
+// returns an array of SwerveModulePositions Advantage Kit version
+  /** Returns the module positions (turn angles and drive positions) for all of the modules. */
+  private SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] states = new SwerveModulePosition[4];
+    for (int i = 0; i < 4; i++) {
+      states[i] = modules[i].getPosition();
     }
+    return states;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
     public ChassisSpeeds getRobotRelativeChassisSpeeds() {
         return Constants.SwerveConstants.kinematics.toChassisSpeeds(getModuleStates());

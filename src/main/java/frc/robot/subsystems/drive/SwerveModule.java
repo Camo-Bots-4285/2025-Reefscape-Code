@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +34,8 @@ public class SwerveModule extends SubsystemBase {
     private final SimpleMotorFeedforward driveFeedforward;
     private final PIDController driveFeedback;
     private final PIDController turnFeedback;
+
+    private Rotation2d turnRelativeOffset = null;
 
 
    public SwerveModule(ModuleIO io, int index) {
@@ -182,4 +185,22 @@ public class SwerveModule extends SubsystemBase {
         return new SwerveModuleState(getCurrentVelocityRadiansPerSecond(), getIntegratedAngle());
     }
 
+      /** Returns the module position (turn angle and drive position). */
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(getPositionMeters(), getAngle());
+  }
+
+    /** Returns the current drive position of the module in meters. */
+    public double getPositionMeters() {
+        return moduleInputs._drivePositionRad * Constants.SwerveConstants.wheelDiameter/2;
+      }
+
+        /** Returns the current turn angle of the module. */
+  public Rotation2d getAngle() {
+    if (turnRelativeOffset == null) {
+      return new Rotation2d();
+    } else {
+      return moduleInputs._turnPosition.plus(turnRelativeOffset);
+    }
+  }
 }
