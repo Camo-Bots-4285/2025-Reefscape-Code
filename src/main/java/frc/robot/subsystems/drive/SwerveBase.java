@@ -144,9 +144,47 @@ public class SwerveBase extends SubsystemBase {
 
 
 
+/*Advantage Kit */
 
-
-
+    //     AutoBuilder.configureHolonomic(
+    //         this::getPose,
+    //         this::setPose,
+    //         () -> kinematics.toChassisSpeeds(getModuleStates()),
+    //         this::runVelocity,
+    //         new HolonomicPathFollowerConfig(
+    //             MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+    //         () ->
+    //             DriverStation.getAlliance().isPresent()
+    //                 && DriverStation.getAlliance().get() == Alliance.Red,
+    //         this);
+    //     Pathfinding.setPathfinder(new LocalADStarAK());
+    //     PathPlannerLogging.setLogActivePathCallback(
+    //         (activePath) -> {
+    //           Logger.recordOutput(
+    //               "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+    //         });
+    //     PathPlannerLogging.setLogTargetPoseCallback(
+    //         (targetPose) -> {
+    //           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+    //         });
+    
+    //     // Configure SysId
+    //     sysId =
+    //         new SysIdRoutine(
+    //             new SysIdRoutine.Config(
+    //                 null,
+    //                 null,
+    //                 null,
+    //                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+    //             new SysIdRoutine.Mechanism(
+    //                 (voltage) -> {
+    //                   for (int i = 0; i < 4; i++) {
+    //                     modules[i].runCharacterization(voltage.in(Volts));
+    //                   }
+    //                 },
+    //                 null,
+    //                 this));
+    //   }
 
 
 
@@ -536,12 +574,12 @@ public class SwerveBase extends SubsystemBase {
     }
 
     // reset the measured distance driven for each module
-    public void resetDriveDistances() {
-        frontLeft.resetDistance();
-        frontRight.resetDistance();
-        rearLeft.resetDistance();
-        rearRight.resetDistance();
-    }
+    // public void resetDriveDistances() {
+    //     frontLeft.resetDistance();
+    //     frontRight.resetDistance();
+    //     rearLeft.resetDistance();
+    //     rearRight.resetDistance();
+    // }
 
     // get the current heading of the robot based on the gyro
     public Rotation2d getHeading() {

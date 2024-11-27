@@ -1,0 +1,82 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.2546557207128677,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2546557207128677,
+        "y": 5.569694576367712
+      },
+      "isLocked": false,
+      "linkedName": "Black Line"
+    },
+    {
+      "anchor": {
+        "x": 2.8981397630253705,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 2.8981397630253705,
+        "y": 5.532787242097261
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "N2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "FeederIntake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Errected"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 250.0,
+    "maxAngularAcceleration": 250.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "BlackLine Paths",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

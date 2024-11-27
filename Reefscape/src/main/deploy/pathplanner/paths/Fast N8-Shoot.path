@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.27,
+        "y": 0.7528
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.320853737336928,
+        "y": 1.1047729202878844
+      },
+      "isLocked": false,
+      "linkedName": "N8"
+    },
+    {
+      "anchor": {
+        "x": 3.921864375795261,
+        "y": 2.622684960334292
+      },
+      "prevControl": {
+        "x": 4.389852770204353,
+        "y": 1.9694511598049345
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "C Shoot Far Rev Shooter"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 250.0,
+    "maxAngularAcceleration": 250.0
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 145.5,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Shoot Places",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

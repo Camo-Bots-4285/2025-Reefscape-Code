@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4356760304969556,
+        "y": 4.114397967513275
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.8917480537521132,
+        "y": 4.119121327672246
+      },
+      "isLocked": false,
+      "linkedName": "C"
+    },
+    {
+      "anchor": {
+        "x": 2.42,
+        "y": 4.1
+      },
+      "prevControl": {
+        "x": 1.8384715971711147,
+        "y": 4.10472336015897
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "N3 Start Pick Up"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 250.0,
+    "maxAngularAcceleration": 250.0
+  },
+  "goalEndState": {
+    "velocity": 0.25,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "C Paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

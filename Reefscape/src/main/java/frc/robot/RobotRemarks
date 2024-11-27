@@ -1,0 +1,122 @@
+This will serves as an overall view of coding standards and what each subsystem does.
+
+    Remarks: There should be one in every subsystem that explains how to use the code and how it works. This is a Remark about the whole robot code and how over all works.
+
+
+
+
+    Marking: This will hello people find information or what is not finish
+
+        NOTE: {a bunch of writing}
+            Will explain an exception or something to consider when using the following code
+        
+        TODO - (a bunch of writing)
+            Make a note that something is not finished and need improvements 
+
+        /* (a bunch of writing) */
+            Will give an introduction or information on what the following code does
+
+        /* Like
+        * a lot
+        * of writing
+        */
+            Should be found on the top of every subsystem or command and explain what it does
+
+        CO - (a bunch of writing)
+            Explain why something was commented out
+
+       
+
+    
+    File organization:
+            Your code will be organized into one of the three categories: Commands, Subsystems, and Base Code. There is a four a category, but it will not run code because the file is not followed by .java, these are called Remarks they will help explain what the code does.
+
+            Base Code:
+                The Base code consists of Constants.java, Main.java, Robot.java, RobotContainer.java, and RobotRemarks. These files should not be located in a subfolder and will be taken into every new code project
+
+            Subsystems:
+                The folder subsystem will contain many more folders that will control the many different parts of the robot. For example, some might be ComputerVisonSubsystem.java, DriveSubsystem.java, and ElectronicsSubsystem.java along with subsystems that are specific to that year’s game. What is inside these folders will depend on what they are running. There are two types of random and Advantage kit folders.
+
+                Random: Folders will have multiple files that do different things but are in the same folder for organization that they do/deal with similar things.
+
+                Advantage Kit: Will have four different types of files located inside of its Logic, IO, Real, and Simulated. There might be multiple of each depending on what the subsystem controls. (For more information visit Advantage Kit Example Code)
+                    - Logic: Is where you will do all the code you would normally do if you were not using Advantage Kit. Exempt Motor, encoder, or numatics.
+                    - IO: Is there where code is generalized for both Real and Simulations.
+                    - Real: Where you will initiate your real compotes of the robot
+                    - Simulated: Currently not able to use but in the future we can virtually code and drive the robot. Replay mode might also be useful to help fix issues.
+
+               
+
+
+
+       
+    Naming Conventions:
+            To help keep everything consistent, look nice, and help readability we have a naming convention. For the following example, the general name will be {ExampleOne} and example command will be {ExampleOneSpin}
+
+        Subsystem:
+
+            For Advantage Kit:
+                - Folder Name: Take the general name you choose and add Subsytem.java to the end off it
+                    Ex: ExampleOneSubsystem.java
+                - Logic: Just enter the general name plus .java
+                    Ex: ExampleOne.java
+                - IO: Enter the general name plus IO.java
+                    Ex: ExampleOneIO.java
+                - Real: Enter the general name plus IOReal.java
+                    Ex: ExampleOneIOReal.java
+                - Simulated: Enter the general name plus IOSim.java
+                    Ex: ExampleOneIOSim.java
+
+            For Random:
+            Just name it something that will help someone know what it does
+
+        Commands: NOTE: Hybrid commands do not follow these rules
+            -Folder Name: Enter the general name 
+                    Ex: ExampleOne
+            -Commands: Use the general name followed by {what is does}.java
+                Ex: ExampleOneSpin.java
+
+        Constants:
+            Create a new class for every subsystem with a variable. The convention for this name is general name followed by Constants.
+                Ex: ExampleOneConstants
+
+            Variable will be in all capital letters and each word is separated by a _ .
+
+        RobotContainer:
+            Create a new button with name in all lower case letters and each work is separated by a _ . The first work will be {btn} then explain what the command does. Note this naming convention is a little looser than the other because you need to name the button so someone can read it and know what it does.
+                Ex: btn_example_one_spin
+                This button calls command {ExampleOneSpin}.
+       
+       
+
+       
+        Setting a standard reference:
+            This is imported so someone can read and understand the value that are being printed out
+            in Advantage Kit. 
+
+                Degrees:
+                NOTE angles will always be explained in degrees but the value in the code will be radian because they are easier to work with
+                Numbers depend on the system they can range from 0-360 or -180 - 180
+
+                If number range from Zero to a number, they will always be positive 
+
+                If number ranges from two values number to the right/clockwise of zero should be negative and number left/counterclockwise of zero should be negative
+
+                If motor movies in the wrong direction just invert it so all reading are standardized
+                
+                
+
+                Quadrants:
+                    Pose of robot on field:
+                    The origin of the robot on the field pose will be looking from the top of the field with the blue side on the right. The origin will be located in the bottom left corner of the blue alliance side. So, every value will be in positive meter. 
+
+                    Drive Heading: Drive heading will change based on if the robot is driving field centric or robot centric.
+
+                    Pose of target to robot:
+                    The origin will be located in the center of the Robot and the x, y, and z axis will be aligned with the Pose of robot on field. This means that if the robot spins in place the target does not change its pose. By doing this we assume the normal mathmatical quadrent sign to the x and y axis to help determine direct of the object.
+                    
+
+                Height: 
+                Will always be measured from the ground and will always be postive
+
+            

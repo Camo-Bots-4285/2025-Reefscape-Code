@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.61028579037215,
+        "y": 4.105
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.626183048674981,
+        "y": 4.109648209296419
+      },
+      "isLocked": false,
+      "linkedName": "N3"
+    },
+    {
+      "anchor": {
+        "x": 2.205906929628587,
+        "y": 4.1
+      },
+      "prevControl": {
+        "x": 2.2156566878454433,
+        "y": 4.094898451079563
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Shoot6"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 250.0,
+    "maxAngularAcceleration": 250.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 153.4,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Shoot Places",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
