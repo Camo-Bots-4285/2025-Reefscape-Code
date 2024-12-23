@@ -1,0 +1,49 @@
+The SwerveBase is the most important subsytem of the robot. Without a good driving system 
+the rest of the code is usless.
+
+    Subsytem Overview-
+    As of right now there are three substems that oporate diffent function of the SwerveBase. The first two are esentail to the robot driving (SwerveBase and SwerveModule) while the third (SelfDriving) is custom code from the summer of 2024 that help make the SwerveBase more autonomus.
+        -Swerve Base handles the over all calcultations of where the SwerveBase is and where it want to go it then breackes this data into each module and feed it into SwerveModule
+        -SwerveModule the play where each module is configured and the the code for each motor lives.
+        -SelfDriving can move the robot based on points, line, and curves
+
+Coding Swerve
+    1) If controler is diffent from previes year change Drive Controls
+    2) Set how far apart the wheels are in SwevreConstants
+    3) Set the Diameter of the wheel in Wheel Diameter
+    4) Get gear ratio off of Swerve Drive Specialties and set the in Gear Ratio
+    5) Get max thoetical speeds from Swerve Drive Specialties best off of motor we are using
+    6) Set all Sparks/Talons/Encoder/Pigeons to the correct ID
+    7) If Pigeon is not mounted with the X-axis faceing the front of the bot change NormalPigeonOfSet
+    8) Then set of "absolute encoder offsets" to zero deploy code and then use a STRAIGHT piece of hard something 
+    to make the wheel all face forward with gear to the inside of the bot
+    9) DO NOT PLACE BOT on the ground tip it up so you can see the wheels drive forward use 
+    "Change Driver Motor Derection" to change derection as needed
+    10) Set Max TeleOp Speed based on driver prefernce and Choreo
+    11) At this point the robot should be driveable how ever it is very far from being a reliable drive base in auto
+    or consistent estimating its POSE without apriltags view Swerve Calibration to make these thing happen
+
+Tuning individual Module PIDS
+
+
+Set PIDs for Path Planner
+    NOTE: you should alway use pathplanner to create the autos as of (8/14/2024) becuase Choreo will not auto correct
+    NOTE: Thought it is not required it might help to make sure all gears on swerve wheels are faceing inwards at the state of a match or auto
+   
+   1) Make two paths with Choreo or PathPlanner then make them into an auto
+        1. Drive in a straight line from a know location on the feild (For about 2-3 meters or what ever lets you get up to max speed and back down)
+        2. Make the same path as path one but make the robot rotate while driving
+   2) Either hard code them in or add them to auto chooser
+   3) Mark out on the ground where the robot thought start and stop (peferable to edge of the bumpers)
+   4) Unplug all cameras set enableInitialreplanning and enableDynamicReplanning to false now robot should drive with no correction software
+   5) Run auto one adjust translation PID till satisfied
+   6) Run auto two adjust rotation PID till satisfied
+   7) Test a full auto path and make sure robot mantains correct position 
+   8) If robot can complete and auto with no auto correction system enableDynamicReplanning run auto but use a spare robot to 
+   bump it where it might hit another robot adjust DynamicReplanningError Threshold till it can correct of a bump Range should be 0-100 check 
+   pathplanner to see if value was changed
+   9) If you wish enableInitialReplanning it will use cameras to correct starting Pose (hopefully the LEDs can do that)
+   10) Add in camera and repeat bumptest to insure variable are right can do a bigger hit and see if camera adjust for it
+    
+    
+    

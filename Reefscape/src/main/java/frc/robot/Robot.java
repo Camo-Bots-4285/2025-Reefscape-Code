@@ -54,6 +54,7 @@ public double currentTimeTeleOp;
 
 public static RobotContainer m_robotContainer;
 
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -62,6 +63,8 @@ public static RobotContainer m_robotContainer;
   public void robotInit() {
     // Instantiate our RobotContainer.
     m_robotContainer = new RobotContainer(this);
+
+    
  
 
    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
@@ -191,6 +194,8 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
+  
 
    // m_robotContainer.m_ArmPivotSubsystem.setGoalPose();
     if (m_autonomousCommand != null) {

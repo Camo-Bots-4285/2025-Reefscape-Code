@@ -29,9 +29,6 @@ import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import java.sql.Driver;
 
@@ -74,16 +71,10 @@ public void setNeedMoreAmps(boolean set) {
     needMoreAmps = set;
   }
 
-public static boolean FasterSwerve;
-public void setFasterSwerve(boolean set) {
-  FasterSwerve = set;
-  }
 
-public static boolean SlowerSwerve;
-public void setSlowerSwerve(boolean set) {
-   SlowerSwerve = set;
+public void setTeleOpMaxSwerveSpeed(double speed) {
+  SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = speed;
   }
-  
 
 
   public SwerveBase() {
@@ -105,6 +96,7 @@ public void setSlowerSwerve(boolean set) {
     rearLeft.initRotationOffset();
     rearRight.initRotationOffset();
 
+
     // reset the measured distance driven for each module
     frontLeft.resetDistance();
     frontRight.resetDistance();
@@ -113,9 +105,9 @@ public void setSlowerSwerve(boolean set) {
 
     /*Change Driver Motor Derection */
     //if true inverts the derection of the drive motor
-    rearRight.getDriveMotor().setInverted(false);
+    rearRight.getDriveMotor().setInverted(true);
     rearLeft.getDriveMotor().setInverted(false);
-    frontRight.getDriveMotor().setInverted(false);
+    frontRight.getDriveMotor().setInverted(true);
     frontLeft.getDriveMotor().setInverted(false);
 
     //if true inverts the derection of the rotation motor should not need to be changed
@@ -126,26 +118,6 @@ public void setSlowerSwerve(boolean set) {
 
     double driveBaseRadius = Constants.SwerveConstants.mDriveRadius.getNorm();
 
-    /*Set PIDs for Path Planner
-    NOTE: you should alway use pathplanner to create the autos as of (8/14/2024) becuase Choreo will not auto correct
-    NOTE: Thought it is not required it might help to make sure all gears on swerve wheels are faceing inwards at the state of a match or auto
-   
-   1) Make two paths with Choreo or PathPlanner then make them into an auto
-        1. Drive in a straight line from a know location on the feild (For about 2-3 meters or what ever lets you get up to max speed and back down)
-        2. Make the same path as path one but make the robot rotate while driving
-   2) Either hard code them in or add them to auto chooser
-   3) Make out on the ground where the robot thought start and stop (peferable to edge of the bumpers)
-   4) Unplug all cameras set enableInitialreplanning and enableDynamicReplanning to false now robot should drive with no correction software
-   5) Run auto one adjust translation PID till satisfied
-   6) Run auto two adjust rotation PID till satisfied
-   7) Test a full auto path and make sure robot mantains correct position 
-   8) If robot can complete and auto with no auto correction system enableDynamicReplanning run auto but use a spare robot to 
-   bump it where it might hit another robot adjust DynamicReplanningError Threshold till it can correct of a bump Range should be 0-100 check 
-   pathplanner to see if value was changed
-   9) If you wish enableInitialReplanning it will use cameras to correct starting Pose (hopefully the LEDs can do that)
-   10) Add in camera and repeat bumptest to insure variable are right can do a bigger hit and see if camera adjust for it
-    
-    */
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -177,6 +149,9 @@ public void setSlowerSwerve(boolean set) {
     pigeonSensor.reset();
   }
 
+
+
+
   /**
    * Subsystem that controls the drivetrain of the robot
    * Handles all the odometry and base movement for the chassis
@@ -187,10 +162,10 @@ public void setSlowerSwerve(boolean set) {
    * 180 degrees added to offset values to invert one side of the robot so that it
    * doesn't spin in place
    */
-  public static final double frontLeftAngleOffset = Units.degreesToRadians(0.0);//239.94
-  private static final double frontRightAngleOffset = Units.degreesToRadians(0.0);//15
-  private static final double rearLeftAngleOffset = Units.degreesToRadians(0.0);//202.85
-  private static final double rearRightAngleOffset = Units.degreesToRadians(0.0);//132.45
+  public static final double frontLeftAngleOffset = Units.degreesToRadians(169.72);//239.94
+  private static final double frontRightAngleOffset = Units.degreesToRadians(85.61);//15
+  private static final double rearLeftAngleOffset = Units.degreesToRadians(158.47);//202.85
+  private static final double rearRightAngleOffset = Units.degreesToRadians(275.36);//132.45
 
   public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
   private final double SCALE_X = -1/0.9;
@@ -271,9 +246,22 @@ public void setSlowerSwerve(boolean set) {
   @Override
   public void periodic() {
 
+    SmartDashboard.putNumber("CanCoderRR", rearRight.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderRL", rearLeft.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderFR", frontRight.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderFL", frontLeft.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorRR", rearRight.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorRL", rearLeft.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorFR", frontRight.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorFL", frontLeft.getIntegratedAngle().getRotations());
+
     currentPoseX = getPose().getX();
     currentPoseY = getPose().getY();
     currentPoseRotation = getPose().getRotation().getDegrees() + 180;
+    //System.out.println(currentPoseX);
+    //System.out.println(currentPoseY);
+    SmartDashboard.putNumber("RobotPoseX", currentPoseX);
+    SmartDashboard.putNumber("RobotPoseY", currentPoseY);
 
     // update the odometry every 20ms
     odometry.update(getHeading(), getModulePositions());

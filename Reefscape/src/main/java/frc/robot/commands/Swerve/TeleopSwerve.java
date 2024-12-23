@@ -97,7 +97,7 @@ if (SwerveBase.AllowMainDriving == true){
         rot,
         isFieldOriented.get()
       );
-      System.out.println(fwdX);
+      
 }
   }
 }

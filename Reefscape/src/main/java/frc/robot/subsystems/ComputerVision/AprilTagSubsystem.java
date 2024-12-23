@@ -37,6 +37,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.ComputerVision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.ComputerVision.LimelightHelpers.PoseEstimate;
+import frc.robot.subsystems.Drive.SwerveBase;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import frc.robot.RobotContainer;
 
@@ -53,6 +54,7 @@ public class AprilTagSubsystem extends SubsystemBase {
   PhotonRunnable photonEstimator2 = new PhotonRunnable("Camera2", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_2);
   PhotonRunnable photonEstimator3 = new PhotonRunnable("Camera3", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_3);
   PhotonRunnable photonEstimator4 = new PhotonRunnable("Camera4", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_4);
+
 
   EstimatedRobotPose visionPose1;
   EstimatedRobotPose visionPose2;
@@ -123,33 +125,33 @@ public class AprilTagSubsystem extends SubsystemBase {
   }
       //Was add to help better limelight it work but if limelight disconects code does not work need to test and find a solution
       public void  MegaTag2 (){
-//         //  int[] validIDs = {3,4};
-//         //   LimelightHelpers.SetFiducialIDFiltersOverride("limelight-tags", validIDs);
+        //  int[] validIDs = {3,4};
+        //   LimelightHelpers.SetFiducialIDFiltersOverride("limelight-tags", validIDs);
 
     
-//       LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBase.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/SwerveBase.pigeonSensor.getYaw(), 0.0, 0, 0, 0, 0);
-//       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
-//       if(Math.abs(SwerveBase.pigeonSensor.getRate()) > 720 ) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-//       {
-//         doRejectUpdate = true;
-//       }
-//       else if( mt2.tagCount == 0)
-//       {
-//         doRejectUpdate = true;
-//       }
-//       else{
-//          doRejectUpdate = false;
-//       }
+      // LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBase.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/SwerveBase.pigeonSensor.getYaw(), 0.0, 0, 0, 0, 0);
+      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
+      // if(Math.abs(SwerveBase.pigeonSensor.getRate()) > 720 ) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // else if( mt2.tagCount == 0)
+      // {
+      //   doRejectUpdate = true;
+      // }
+      // else{
+      //    doRejectUpdate = false;
+      // }
       
-//       if(doRejectUpdate == false)
-//       {
-//        //Robot.m_robotContainer.m_swerveBase.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-//        Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(
-//             mt2.pose,
-//             mt2.timestampSeconds);
-//        //System.out.println("Calculating");
-// // 
-//           }
+      // if(doRejectUpdate == false)
+      // {
+      //  //Robot.m_robotContainer.m_swerveBase.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //  Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(
+      //       mt2.pose,
+      //       mt2.timestampSeconds);
+       //System.out.println("Calculating");
+// 
+          //}
         
      // System.out.println(doRejectUpdate);
       }
@@ -160,6 +162,7 @@ public class AprilTagSubsystem extends SubsystemBase {
     photonEstimator2.run();
     photonEstimator3.run();
     photonEstimator4.run();
+   
     
     // Pose3d cam1Pose = new Pose3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
     
@@ -168,6 +171,7 @@ public class AprilTagSubsystem extends SubsystemBase {
       visionPose2 = photonEstimator2.grabLatestEstimatedPose();
       visionPose3 = photonEstimator3.grabLatestEstimatedPose();
       visionPose4 = photonEstimator4.grabLatestEstimatedPose();
+     
  
      //System.out.println("Camera5 Vision P+ose:" + visionPose5);
      
@@ -207,30 +211,31 @@ public class AprilTagSubsystem extends SubsystemBase {
       }
       Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d4, visionPose4.timestampSeconds);
     }
+
+     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
+    if(limelightMeasurement.tagCount > 0){
+          Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+        }
+    
     
     // LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
     // if(limelightMeasurement.tagCount >= 1){
     //       Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
     //     }
-    // if (visionPose5 != null) {
-    //   // New pose from vision
-    //   sawTag = true;
-    //   Pose2d pose2d5 = visionPose5.estimatedPose.toPose2d();
-    //   if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
-    //     pose2d5 = flipAlliance(pose2d5);
-    //   }
-    //   Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d5, visionPose5.timestampSeconds);
-    // }
+
     // This method will be called once per scheduler run
     // System.out.println("Pose: " + Robot.m_robotContainer.m_swerveBase.getPose3d());
     publisher.set(Robot.m_robotContainer.m_swerveBase.getPose3d());
   //System.out.println("Old" + limelightMeasurement.pose);
+  
 }
+  
 
 
 //Runs all the time (Both auto and teleOp)
     @Override
   public void periodic() {
+   // SmartDashboard.putString("LimelightEstimate",limelightMeasurement.pose.toString());
 
 }
  
@@ -303,13 +308,12 @@ public void updatedPoseFromTagAuto() {
   }
 
   //Limlight Example
- if (RobotContainer.Camera5_InAuto == true ) {
+  if (RobotContainer.Camera5_InAuto == true ) {
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
     if(limelightMeasurement.tagCount >= 1){
           Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
         }
- }
-
+      }
     // if (visionPose5 != null) {
     //   // New pose from vision
     //   sawTag = true;

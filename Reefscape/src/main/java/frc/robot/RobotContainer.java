@@ -52,7 +52,7 @@ import edu.wpi.first.wpilibj2.command.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public static SwerveBase m_swerveBase = new SwerveBase();
+  public SwerveBase m_swerveBase = new SwerveBase();
   public static AprilTagSubsystem m_aprilTag = new AprilTagSubsystem();
   public static LEDSubsystem m_led = new LEDSubsystem();
   public static SelfDriving m_selfDriving = new SelfDriving();
@@ -78,45 +78,12 @@ public class RobotContainer {
   
   //Defines all buttons that will be used to control the robot
   // private JoystickButton btn_arm_pivot_down;
-  private JoystickButton btn_arm_pivot_up;
-  private JoystickButton btn_shooter_feeder;
-  private JoystickButton btn_floor_feeder;
-  private JoystickButton btn_armP_pivot_stop;
-  // private JoystickButton btn_amp_scoring_pos;
-  private JoystickButton btn_shooting;
-  private JoystickButton btn_human_feeder;
-  private JoystickButton btn_store;
-  private JoystickButton btn_shooting_without_cameras;
-  private JoystickButton btn_shooting_without_cameras_stage_leg;
-  private JoystickButton btn_shooting_without_cameras_2nd_stage_leg;
-  private JoystickButton btn_amp_scoring_pos;
+  
+  //Swerve Buttions
   private JoystickButton btn_reset_yaw;
-  private JoystickButton btn_aim_speaker;
-  private JoystickButton btn_aim_amp;
-  private JoystickButton btn_aim_human_feeder;
-  private JoystickButton btn_led_win;
-  private JoystickButton btn_shooter;
-  private JoystickButton btn_defence;
-  private JoystickButton btn_errected;
-  private JoystickButton btn_line_scoring;
-  private JoystickButton btn_cross_field;
-  private JoystickButton btn_reverse_feeder;
-  private JoystickButton btn_aim_line;
-  private JoystickButton btn_driver_N1;
-  private JoystickButton btn_trap_scoring;
-  private JoystickButton btn_far_feeder;
-
-  private JoystickButton btn_auto_pickup;
-  private JoystickButton btn_more_amps;
-  private JoystickButton btn_faster_swerve;
   private JoystickButton btn_slower_swerve;
+    private JoystickButton btn_faster_swerve;
   private JoystickButton btn_self_driving_shoot;
-  private JoystickButton btn_pickup_note_to_shoot;
-
-  private JoystickButton btn_shooting_with_driver;  
-  private JoystickButton btn_driver_fire;  
-  private JoystickButton btn_pose_note;
-
   private JoystickButton btn_PID_Tune_1;
 
 
@@ -159,63 +126,6 @@ public class RobotContainer {
     driverJoystick = new Joystick(0);
     streamdeck = new Joystick(1);
 
-
-    //Put auto in here and they will show up in smart dash board do no forget to select auto before match
-    mChooser = new SendableChooser<>();
-    SmartDashboard.putData("Auto Choices",  mChooser);
-    mChooser.setDefaultOption("Default Auto", "StraitLineTest");
-    mChooser.addOption("PidSetting", "PidSetting");
-    mChooser.addOption("Test Aim", "AlignShooterTest");
-    mChooser.addOption("A-N1", "A-N1");
-    mChooser.addOption("Hellos", "Hellos");
-    mChooser.addOption("B-Shoot2-N2-Shoot5", "B-Shoot2-N2-Shoot5");
-    mChooser.addOption("StraitLineTest", "StraitLineTest");
-    mChooser.addOption("Note Stop Test", "Note Stop Test");
-    mChooser.addOption("NotePickupTest", "NotePickupTest");
-    mChooser.addOption("NotePickupTest2", "NotePickupTest2");
-    mChooser.addOption("103 Auto", "103 Auto");
-    mChooser.addOption("RotationTest", "RotationTest");
-    
-
-    //Used to turn Cameras on and off in auto
-    mChooser1 = new SendableChooser<>();
-    mChooser1.setDefaultOption("Yes", "Yes");
-    mChooser1.addOption("No", "No");
-    SmartDashboard.putData("Camera-1 in Auto" ,  mChooser1);
-
-    mChooser2 = new SendableChooser<>();
-    mChooser2.setDefaultOption("Yes", "Yes");
-    mChooser2.addOption("No", "No");
-    SmartDashboard.putData("Camera-2 in Auto" ,  mChooser2);
-
-    mChooser3 = new SendableChooser<>();
-    mChooser3.setDefaultOption("Yes", "Yes");
-    mChooser3.addOption("No", "No");
-    SmartDashboard.putData("Camera-3 in Auto" ,  mChooser3);
-
-    mChooser4 = new SendableChooser<>();
-    mChooser4.setDefaultOption("Yes", "Yes");
-    mChooser4.addOption("No", "No");
-    SmartDashboard.putData("Camera-4 in Auto" ,  mChooser4);
-
-    mChooser5 = new SendableChooser<>();
-    mChooser5.setDefaultOption("Yes", "Yes");
-    mChooser5.addOption("No", "No");
-    SmartDashboard.putData("Camera-5 in Auto" ,  mChooser5);
-
-    //Used to make isRed true or false to inverts what side the robot is on
-    mChooser6 = new SendableChooser<>();
-    mChooser6.setDefaultOption("Red", "Red");
-    mChooser6.addOption("Blue", "Blue");
-    SmartDashboard.putData("Aliance Color",  mChooser6);
-
-    mChooser7 = new SendableChooser<>();
-    mChooser7.setDefaultOption("45", "45");
-    mChooser7.addOption("-45", "-45");
-    mChooser7.addOption("0", "0");
-    SmartDashboard.putData("Robot Rotation Off Set In Auto",  mChooser7);
-
- 
     // Controles rotaion Whne Auto Targeting
      angleController = new PIDController(1.0, 0.0, 0.0);
      angleController.enableContinuousInput(-Math.PI, Math.PI);
@@ -239,7 +149,7 @@ public class RobotContainer {
 
     //Stops the robot from reciving any rotation command
    stopRotation = () -> driverJoystick.getRawButton(9) ? 0.0 : 1.0;
-    //New driver interface without clamp and new lever ramp range from 20%-100% commanded max power
+    //New driver interface without clamp and new lever ramp range from 20%-100% commanded max speed
     m_swerveBase.setDefaultCommand(
         new TeleopSwerve(
             m_swerveBase,
@@ -300,21 +210,16 @@ public class RobotContainer {
     //ReZeros pigeon if intale calibration was not correct
     btn_reset_yaw = new JoystickButton(driverJoystick, 7);
     btn_reset_yaw.onTrue(new InstantCommand(() -> m_swerveBase.setNeedPigeonReset(true)));
-
-    //Sets the robot max amp draw to more then normal
-     btn_more_amps = new JoystickButton(driverJoystick, 8);
-     btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
-     btn_more_amps.onFalse(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(false)));
-      
+ 
      //This will change max swerve speed thought SwerveBase to slower
      btn_slower_swerve = new JoystickButton(driverJoystick, 8);
-     btn_slower_swerve.whileTrue(new RunCommand(() -> m_swerveBase.setSlowerSwerve(true)));
-     btn_slower_swerve.onFalse(new RunCommand(() -> m_swerveBase.setSlowerSwerve(false)));
+     btn_slower_swerve.whileTrue(new RunCommand(() -> m_swerveBase.setTeleOpMaxSwerveSpeed(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecondSlow)));
+     btn_slower_swerve.onFalse(new RunCommand(() -> m_swerveBase.setTeleOpMaxSwerveSpeed(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecondNormal)));
 
     //This will change max swerve speed thought SwerveBase to faster
     //  btn_faster_swerve = new JoystickButton(driverJoystick, 5);
-    //  btn_faster_swerve.whileTrue(new RunCommand(() -> m_swerveBase.setFasterSwerve(true)));
-    //  btn_faster_swerve.onFalse(new RunCommand(() -> m_swerveBase.setFasterSwerve(false)));
+    //  btn_faster_swerve.whileTrue(new RunCommand(() -> m_swerveBase.setTeleOpMaxSwerveSpeed(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecondFast)));
+    //  btn_faster_swerve.onFalse(new RunCommand(() -> m_swerveBase.setTeleOpMaxSwerveSpeed(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecondNormal)));
     
 
 
@@ -349,45 +254,66 @@ public class RobotContainer {
   
     NamedCommands.registerCommand("Align", (new AlignPoseSpeaker(m_swerveBase)));
     NamedCommands.registerCommand("MovetoNote", (new MoveToNote(m_swerveBase)));
+
+
+
+        //Put auto in here and they will show up in smart dash board do no forget to select auto before match
+    mChooser = new SendableChooser<>();
+    SmartDashboard.putData("Auto Choices",  mChooser);
+    mChooser.setDefaultOption("Default Auto", "StraitLineTest");
+    mChooser.addOption("PidSetting", "PidSetting");
+    mChooser.addOption("Test Aim", "AlignShooterTest");
+    mChooser.addOption("A-N1", "A-N1");
+    mChooser.addOption("Hellos", "Hellos");
+    mChooser.addOption("B-Shoot2-N2-Shoot5", "B-Shoot2-N2-Shoot5");
+    mChooser.addOption("StraitLineTest", "StraitLineTest");
+    mChooser.addOption("Note Stop Test", "Note Stop Test");
+    mChooser.addOption("NotePickupTest", "NotePickupTest");
+    mChooser.addOption("NotePickupTest2", "NotePickupTest2");
+    mChooser.addOption("103 Auto", "103 Auto");
+    mChooser.addOption("RotationTest", "RotationTest");
+    
+
+    //Used to turn Cameras on and off in auto
+    mChooser1 = new SendableChooser<>();
+    mChooser1.setDefaultOption("Yes", "Yes");
+    mChooser1.addOption("No", "No");
+    SmartDashboard.putData("Camera-1 in Auto" ,  mChooser1);
+
+    mChooser2 = new SendableChooser<>();
+    mChooser2.setDefaultOption("Yes", "Yes");
+    mChooser2.addOption("No", "No");
+    SmartDashboard.putData("Camera-2 in Auto" ,  mChooser2);
+
+    mChooser3 = new SendableChooser<>();
+    mChooser3.setDefaultOption("Yes", "Yes");
+    mChooser3.addOption("No", "No");
+    SmartDashboard.putData("Camera-3 in Auto" ,  mChooser3);
+
+    mChooser4 = new SendableChooser<>();
+    mChooser4.setDefaultOption("Yes", "Yes");
+    mChooser4.addOption("No", "No");
+    SmartDashboard.putData("Camera-4 in Auto" ,  mChooser4);
+
+    mChooser5 = new SendableChooser<>();
+    mChooser5.setDefaultOption("Yes", "Yes");
+    mChooser5.addOption("No", "No");
+    SmartDashboard.putData("Camera-5 in Auto" ,  mChooser5);
+
+    //Used to make isRed true or false to inverts what side the robot is on
+    mChooser6 = new SendableChooser<>();
+    mChooser6.setDefaultOption("Red", "Red");
+    mChooser6.addOption("Blue", "Blue");
+    SmartDashboard.putData("Aliance Color",  mChooser6);
+
+    mChooser7 = new SendableChooser<>();
+    mChooser7.setDefaultOption("0", "0");
+    mChooser7.addOption("-45", "-45");
+    mChooser7.addOption("45", "45");
+    SmartDashboard.putData("Robot Rotation Off Set In Auto",  mChooser7);
   
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    //return Autos.exampleAuto(m_exampleSubsystem);
-    return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
-    //if you want hard coded auto do "AutoName"
-  //   Command autonomousCommand = new AutoTest(
-  //   m_shooter,
-  //   m_ArmPivotSubsystem,
-  //   m_intake,
-  //   m_shooterFeeder,
-  //   m_swerveBase,
-  //   m_lineBreak
-  //  );
-
-    //return autonomousCommand;
-  }
-
-  public SwerveBase getSwerveSubsytem() {
-    return m_swerveBase;
-  }
-
-
-  // public LineBreak getLineBreakSubsystem() {
-  //   return m_lineBreak;
-  // }
-
-  // public ShooterSubsystem getShooterSubsystem() {
-  //   return m_shooter;
-  // }
-
-  
   //Take what mChooser says and makes isRed true or false only work beacuse method is called in robot(telop perodic)
   public void SmartDashboardtoCommands() {
   // if (mChooser6.getSelected() == "Blue") {
@@ -449,21 +375,44 @@ public class RobotContainer {
     if (mChooser7.getSelected() == "0") {
     AutoPigeonOfSet = 0;
     }
-
-
-
-  if (mChooser.getSelected() == "StraitLineTest") {
-    SelfDriving.StartingTargetPoseX = 1.43;
-    SelfDriving.StartingTargetPoseY = 5.5;
-    SelfDriving.StartingTargetPoseRotation = 0;
-    }
-    if (mChooser7.getSelected() == "-45") {
-    AutoPigeonOfSet = -45;
-    }
-    if (mChooser7.getSelected() == "0") {
-    AutoPigeonOfSet = 0;
-    }
-    
+ 
   }
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    // An example command will be run in autonomous
+    //return Autos.exampleAuto(m_exampleSubsystem);
+    return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
+    //if you want hard coded auto do "AutoName"
+  //   Command autonomousCommand = new AutoTest(
+  //   m_shooter,
+  //   m_ArmPivotSubsystem,
+  //   m_intake,
+  //   m_shooterFeeder,
+  //   m_swerveBase,
+  //   m_lineBreak
+  //  );
+
+    //return autonomousCommand;
+  }
+
+  public SwerveBase getSwerveSubsytem() {
+    return m_swerveBase;
+  }
+
+
+  // public LineBreak getLineBreakSubsystem() {
+  //   return m_lineBreak;
+  // }
+
+  // public ShooterSubsystem getShooterSubsystem() {
+  //   return m_shooter;
+  // }
+
+  
+  
   
 }

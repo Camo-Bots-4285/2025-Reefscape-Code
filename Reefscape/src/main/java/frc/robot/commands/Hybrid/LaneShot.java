@@ -1,7 +1,6 @@
 package frc.robot.commands.Hybrid;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.ArmPivotConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
 import frc.robot.subsystems.Drive.SelfDriving;

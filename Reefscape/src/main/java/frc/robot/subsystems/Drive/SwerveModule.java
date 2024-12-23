@@ -7,12 +7,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 //import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.*;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -51,14 +47,9 @@ public class SwerveModule extends SubsystemBase {
   public PIDController DriveController;
   public double DriveControllerkp;
 
-  public double PositionConversionFactor = 2.0 * Math.PI / SwerveConstants.driveGearRatio;
-  public double VelocityConversionFactor = 2.0 * Math.PI / 60 / SwerveConstants.driveGearRatio;
-  public double AngleConversionFactor = 2.0 * Math.PI / SwerveConstants.angleGearRatio;
-
   private final TalonFX driveMotor;
-  private final CurrentLimitsConfigs driveMotorLimiter;
   private final TalonFX rotationMotor;
-  private final CurrentLimitsConfigs rotationMotorLimiter;
+
 
   public TalonFX getDriveMotor() {
     return driveMotor;
@@ -68,8 +59,9 @@ public class SwerveModule extends SubsystemBase {
     return rotationMotor;
   }
   
-  public final TalonFXConfigurator driveEncoder;
+
   public final TalonFXConfigurator rotationEncoder;
+  public final TalonFXConfigurator driveEncoder;
 
   private final CANCoder canCoder;
 
@@ -77,8 +69,7 @@ public class SwerveModule extends SubsystemBase {
   // robot is turned on
   private final Rotation2d offset;
 
-  // private SparkPIDController rotationController;
-  // private TalonFX driveController;
+
   
   public SwerveModule(
       int driveMotorId,
@@ -91,40 +82,71 @@ public class SwerveModule extends SubsystemBase {
 
     swerveDrive = swerveSubsystem;
   
-    //Defines what spark to target
-    //driveMotor = new TalonFX(driveMotorId, MotorType.kBrushless);
+    //Defines what Talon to target
     driveMotor = new TalonFX(driveMotorId, "rio");
-    driveMotorLimiter = new CurrentLimitsConfigs();
-    driveMotor.getConfigurator().apply(driveMotorLimiter);
-    
 
-    rotationMotor = new TalonFX(rotationMotorId, "rio");
-    rotationMotorLimiter = new CurrentLimitsConfigs();
-    rotationMotor.getConfigurator().apply(rotationMotorLimiter);
-    
+    //Get encoder for that Talon
+    var driveConfig = new TalonFXConfiguration();
 
+    //Turns on current limitor
+    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    //Get encoder for that spark
+    // Set the supply current limit to 40 amps (continuous)
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;//amps
+
+    // Set the supply peak current to 60 amps (short bursts)
+    driveConfig.CurrentLimits.SupplyCurrentThreshold = 70.0;//amps
+
+    // Set the time (in seconds) the motor can run at peak current before limiting kicks in
+    driveConfig.CurrentLimits.SupplyTimeThreshold = 1.0; //second
+
+    //Applies current limitor
+    driveMotor.getConfigurator().apply(driveConfig);
+
+    //Configures the encoder
     driveEncoder = driveMotor.getConfigurator();
+
+/*When talking current limits - The following rules apply along with the motors physical limits
+ * SupplyCurrenLimit should be =< the breacker on the robot
+ * SupplyCurrentThreshold dependes on each motor but should not be more than twice the breacker
+ * SupplyTimeThreshold is normal 1-2 seconds
+ * 
+ * Theses values are all in place to not trip breacker and make sure motor are not permently damaged
+ * They will still get very warm when run contiusely
+ */
+
+    //Defines what Talon to target
+    rotationMotor = new TalonFX(rotationMotorId, "rio");
+
+    var rotationConfig = new TalonFXConfiguration();
+
+    //Turns on current limitor
+    rotationConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    // Set the supply current limit to 40 amps (continuous)
+    rotationConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+
+    // Set the supply peak current to 60 amps (short bursts)
+    rotationConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
+
+    // Set the time (in seconds) the motor can run at peak current before limiting kicks in
+    rotationConfig.CurrentLimits.SupplyTimeThreshold = 1.0; // 1 second
+
+    //Applies current limitor
+    rotationMotor.getConfigurator().apply(rotationConfig);
+
+    //Configures the encoder
     rotationEncoder = rotationMotor.getConfigurator();
+
+
  
     //get canCoder
     canCoder = new CANCoder(canCoderId);
+  
 
     //Set the offset to make the wheel go "staight"
     offset = new Rotation2d(measuredOffsetRadians);
 
-    //Sets the Idle mode to brake so robot can not be pushed when motor is not in use
-    //driveMotor.setIdleMode(IdleMode.kBrake);
-    //rotationMotor.setIdleMode(IdleMode.kBrake);
-
-    //Sets PID controller to the SPARK
-    // rotationController = rotationMotor.getPIDController();
-    // driveController = driveMotor.getPIDController();
-
-    //Sets the P value for the PID
-    // rotationController.setP(rotationmotorkP);
-    // driveController.setP(drivemotorkP);
 
     //Sets PID value for how the rotation motor willl reach it's target
     //You can lovwer this value to decress speed to help save wheels but will make the robot harder to drive
@@ -134,33 +156,10 @@ public class SwerveModule extends SubsystemBase {
 
 
     RotationController = new PIDController(rotationmotorkP, 0, 0.0);
-    //RotationController.enableContinuousInput(-Math.PI, Math.PI);
+    RotationController.enableContinuousInput(-Math.PI, Math.PI);
 
     DriveController = new PIDController(drivemotorkP /*+ Slope*(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed - auto speed)*/ , 0.0, 0.0);
    // DriveControllerkp = drivemotorkP;
-
-
-    // set the output of the drive encoder to be in radians for linear measurement
-
-    // set the output of the drive encoder to be in radians per second for velocity
-    // measurement
-
-
-    // set the output of the rotation encoder to be in radians
-//     rotationEncoder.SensorToMechancilRatio(2.0 * Math.PI / SwerveConstants.angleGearRatio);
-
-//     rotationEncoder.Feedback.SensorToMechanismRatio = 1;
-
-//     rotationMotor.getFeedback().setSensorToMechanismRatio(1);
-
-//   // Set the sensor-to-mechanism ratio directly on the rotation motor
-// rotationMotor.configSensorTerm(TalonFXFeedbackDevice.IntegratedSensor, 1.0); // Adjust based on your requirements
-
-// // Example to configure feedback sensor
-// rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
-
-//    rotationMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor);
-
 
     // configure the CANCoder to output in unsigned (wrap around from 360 to 0
     // degrees)
@@ -172,13 +171,13 @@ public class SwerveModule extends SubsystemBase {
 
   public void resetDistance() {
 
-    driveEncoder.setPosition(0.0);
+    driveMotor.setPosition(0.0);
 
   }
 
   public Double getDriveDistanceRadians() {
 
-    return driveMotor.getPosition().getValueAsDouble() * PositionConversionFactor;
+    return Units.rotationsToRadians(driveMotor.getPosition().getValueAsDouble()) / SwerveConstants.driveGearRatio;
 
   }
 
@@ -193,7 +192,7 @@ public class SwerveModule extends SubsystemBase {
 
   public Rotation2d getIntegratedAngle() {
     // Wass
-    // double unsignedAngle = rotationMotor.getPosition() % (2 * Math.PI);
+    // double unsignedAngle = rotationMotor.getPosition().getValueAsDouble() % (2 * Math.PI);
 
     // if (unsignedAngle < 0)
     //   unsignedAngle += 2 * Math.PI;
@@ -201,32 +200,26 @@ public class SwerveModule extends SubsystemBase {
     // return new Rotation2d(unsignedAngle);
 
     //Carlos
-   // return new Rotation2d(rotationEncoder.getPosition());
-    return new Rotation2d(rotationMotor.getPosition().getValueAsDouble()*AngleConversionFactor);
+    return new Rotation2d(Units.rotationsToRadians(rotationMotor.getPosition().getValueAsDouble())/SwerveConstants.angleGearRatio);
+
 
   }
-
-  //     public FeedbackConfigs withSensorToMechanismRatio(double newSensorToMechanismRatio)
-  //   {
-  //       SensorToMechanismRatio = newSensorToMechanismRatio;
-  //       return this;
-  //  }
 
 
   public double getCurrentVelocityRadiansPerSecond() {
 
-    return driveMotor.getVelocity().getValueAsDouble() * VelocityConversionFactor;
+    return Units.rotationsToRadians(driveMotor.getVelocity().getValueAsDouble()) / SwerveConstants.driveGearRatio;
 
   }
 
   public double getCurrentVelocityMetersPerSecond() {
 
-    return driveMotor.getVelocity().getValueAsDouble() * VelocityConversionFactor;
+    return Units.rotationsToRadians(driveMotor.getVelocity().getValueAsDouble()) / SwerveConstants.driveGearRatio * (SwerveConstants.wheelDiameter / 2.0);
 
   }
 
   public double getCurrentDistanceMetersPerSecond() {
-    return driveMotor.getPosition().getValueAsDouble() * PositionConversionFactor;
+    return Units.rotationsToRadians(driveMotor.getPosition().getValueAsDouble()) / SwerveConstants.driveGearRatio * (SwerveConstants.wheelDiameter / 2.0);
   }
 
   // unwraps a target angle to be [0,2π]
@@ -248,8 +241,8 @@ public class SwerveModule extends SubsystemBase {
   // measured by the CANCoder
   public void initRotationOffset() {
 
-    rotationEncoder.setPosition(getCanCoderAngle().getRadians());
-
+    rotationMotor.setPosition/*(Units.rotationsToRadians*/(getCanCoderAngle().getRotations()* SwerveConstants.angleGearRatio);
+    //rotationEncoder.setPosition(getCanCoderAngle().getRadians());
   }
 
   /**
@@ -265,7 +258,7 @@ public class SwerveModule extends SubsystemBase {
    * @param currentAngle The current module angle.
    */
 
-// Wass
+// //Wass
 //   public static SwerveModuleState optimize(
 //       SwerveModuleState desiredState, Rotation2d currentAngle) {
 
@@ -312,65 +305,25 @@ public class SwerveModule extends SubsystemBase {
 
 
     //Was 
-    rotationMotor.set(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
-    //Change to make more consistent thought set voltage
-    //rotationMotor.setVoltage(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint)/SwerveConstants.maxAngularVelocity);
+    rotationMotor.setVoltage(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
+
+
 
     double angularVelolictySetpoint = optimizedDesiredState.speedMetersPerSecond /
         (SwerveConstants.wheelDiameter / 2.0);
 
      
-      
-    //driveMotor.set(DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)*SwerveConstants.calibrationFactorSB);
-   // driveMotor.set(testRotationController.calculate(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed),optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
-    
-   
-   
-   
   //Was 
-  driveMotor.set(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
-  
-  //This soulde defently work
-  //driveMotor.setVoltage(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
+  driveMotor.setVoltage(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
 
  //This should compart to our current to make a feed back might not work becasue it might take all swerves into acount insted of one
  // driveMotor.setVoltage(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond,getCurrentVelocityMetersPerSecond())/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
-    System.out.print(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
-
-    //Sets the max amps the swerve base can draw
-    //Need to be tested with krakens
-    // if(RobotState.isAutonomous()){
-    //   driveMotorLimiter.StatorCurrentLimit = 45;
-
-    // }
-    // else if(SwerveBase.needMoreAmps == true){
-    //   driveMotorLimiter.StatorCurrentLimit = 45;
-    // }
-    // else if(SwerveBase.needMoreAmps == false){
-    //   driveMotorLimiter.StatorCurrentLimit = 35;
-    // }
-
-    // driveMotorLimiter.StatorCurrentLimitEnable = true;
-    // driveMotor.getConfigurator().apply(driveMotorLimiter);
-
-  //   if (SwerveBase.FasterSwerve == true) {
-  //     //System.out.println("Swerve is Fast");
-  //     SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 5.5;//Faster swerve speed
-  //     }
-  //  if (SwerveBase.SlowerSwerve == true) {
-  //    //System.out.println("Swerve is Slow");
-  //    SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.125;//Slower swerve speed
-  //  }
-  //  if(SwerveBase.FasterSwerve == false & SwerveBase.SlowerSwerve == false){
-  //   //System.out.println("Swerve is Normal 0.5");
-  //    SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = .5;//Normal swerve speed
-     
-  //  }
+  
 }
 
   public void resetEncoders() {
-    driveEncoder.setPosition(0);
-    rotationEncoder.setPosition(0);
+    driveMotor.setPosition(0);
+    rotationMotor.setPosition(0);
   }
 
   public void stop() {
@@ -385,6 +338,6 @@ public class SwerveModule extends SubsystemBase {
 
 @Override
 public void periodic(){
- // System.out.println(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
+
 }
 }

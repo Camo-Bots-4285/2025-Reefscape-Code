@@ -41,7 +41,7 @@ drive = swerveBase;
   @Override
   public void execute() {
  
-drive.drive(1.0, 0.0, 0.0, false);
+drive.drive(2.0, 0.0, 0.0, false);
 //drive.drive(SelfDriving.XSpeed, SelfDriving.YSpeed, 0.0, true);
 SwerveBase.AllowMainDriving = false;
 

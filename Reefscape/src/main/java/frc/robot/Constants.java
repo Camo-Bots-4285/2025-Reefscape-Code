@@ -65,155 +65,8 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class AprilTagConstants {
-  }
-
-  public static class ArmPivotConstants {
-    /*
-     * These numbers must match the Spark connecting to this motor.
-     */
-
-    // 2 NEO Motor
-    public static final int MOTOR_ARM_PIVOT_A = 20;
-    public static final int MOTOR_ARM_PIVOT_B = 21;
-
-    // PID Locations
-     public static final int POSITION_STARTING = 0;
-    public static final int POSITION_INTAKE_FLOOR = 1;
-    public static final int POSITION_INTAKE_FEEDER = 2;
-    public static final int POSITION_TRAVEL = 3;
-    public static final int POSITION_AMP_SCORING = 4;
-    public static final int POSITION_SHOOTING = 5;
-    public static final int POSITION_HUMAN_FEEDER = 6;
-    public static final int POSITION_STORE = 7;
-    public static final int POSITION_ERRECTED = 8;
-    public static final int POSITION_SHOOTING_WITHOUT_CAMERAS = 9;
-    public static final int POSITION_SHOOTING_WITHOUT_CAMERAS_STAGE_LEG = 10;
-    public static final int POSITION_SHOOTING_WITHOUT_CAMERAS_2ND_STAGE_LEG = 11;
-    public static final int POSITION_AMP_SCORING_POS = 12;
-    public static final int POSITION_SHOOTING_WITHOUT_CAMERAS_N1 = 13;
-    public static final int POSITION_SHOOTING_DEFENCE = 14;
-    public static final int POSITION_LINE_SCORING = 15;
-    public static final int POSITION_TRAP_SCORING = 16;
-    public static final int POSITION_FAR_FEEDER = 17;
-
-    public static final double POSITION_PID_STARTING = 0;// Robot Will go here on start
-    public static final double POSITION_PID_INTAKE_FLOOR = POSITION_STARTING;
-    public static final double POSITION_PID_INTAKE_FEEDER = 1.31;
-    public static final double POSITION_PID_AMP_SCORING = -2.3333;
-    public static final double POSITION_PID_HUMAN_FEEDER = -2.499999; //-2.595237 //-2.666665
-    //-2.499999 Far Human Feeder
-    public static final double POSITION_PID_STORE = 6.214284;
-    public static final double POSITION_PID_ERRECTED = 0;
-    public static final double POSITION_PID_SHOOTING_WITHOUT_CAMERAS =  2.1666 ;//2.1666   2.5   2.833331  2.880950
-    public static final double POSITION_PID_SHOOTING_WITHOUT_CAMERAS_2ND_STAGE_LEG = 3.41; 
-    public static final double POSITION_PID_SHOOTING_WITHOUT_CAMERAS_STAGE_LEG = 3.15;
-    public static final double POSITION_PID_AMP_SCORING_POS = -1.9; //-1.738;
-    public static final double POSITION_PID_SHOOTING_WITHOUT_CAMERAS_N1 = 3.25; //1.07126
-    public static final double POSITION_PID_SHOOTING_DEFENCE = .1;
-    public static final double POSITION_PID_LINE_SCORING = 2.7;//2.85
-    public static final double POSITION_PID_SHOOTING_TRAP = 1.761905;
-    public static final double POSITION_PID_FAR_FEEDER = 2.833331;
-
-    // 36 inch -- 1.31
-    // 42 inch -- 1.336
-    // 48 inch -- 1.37
-    // 54 inch -- 1.35
-    // 60 inch -- 1.36
-    // 66 inch -- 1.382
-    // 72 inch -- 1.388
-    // 78 inch -- 1.395
-    // 84 inch -- 1.42
-    // 90 inch -- 1.44
-    // 96 inch -- 1.45
-    // 102 inch -- 1.47
-    // 108 inch -- 1.48
-    // 114 inch -- 1.48
-    // 120 inch -- 1.485
-    // 126 inch -- 1.49
-    // 132 inch -- 1.495
-    // 138 inch -- 1.495
-    // 144 inch -- 1.50
-    // 150 inch -- 1.50
-    // 156 inch -- 1.505
-    // 162 inch -- 1.51
-    // 168 inch -- 1.515
-    // 174 inch -- 1.53
-    // 180 inch -- 1.5375
-    // 186 inch -- 1.5425
-    // 192 inch -- 1.54525
-    // 198 inch -- 1.54
-    // 204 inch -- 1.535
-    // 216 inch --1.5375 This value shoot good disk high and bad disk low
-
-    // public static final double POSITION_PID_INTAKE_FEEDER = 1.4;
-    public static final double POSITION_PID_TRAVEL = 0.22;
-
-  }
-
-  public static class ClimberConstants {
-    /*
-     * These numbers must match the Spark connecting to this motor.
-     */
-  }
-
-  public static class IntakeConstants {
-    /*
-     * These numbers must match the Spark connecting to this motor.
-     */
-
-    // NEO Motor
-    public static final int MOTOR_INTAKE_FLOOR = 13;
-    public static final int MOTOR_INTAKE_FLOOR2 = 14;
-
-  }
-
-  public static class ShooterConstants {
-    /*
-     * These numbers must match the Spark connecting to this motor.
-     */
-
-    // Falcon Motor
-    public static final int MOTOR_SHOOTER_A = 15;
-
-    // Falcon Motor
-    public static final int MOTOR_SHOOTER_B = 16;
-  }
-
-  public static class ShooterFeederConstants {
-    /*
-     * These numbers must match the Spark connecting to this motor.
-     */
-
-    // NEO Motor
-    //public static final int MOTOR_SHOOTER_FEEDER = 11;
-
-    //public static final int SHOOTER_FEEDER_STATE_FLOOR_FEEDING = 0;
-    //public static final int SHOOTER_FEEDER_STATE_HUMAN_FEEDING = 1;
-    //public static final int SHOOTER_FEEDER_REVERSE = 3;
-    //public static final int SHOOTER_FEEDER_FAR_FEEDER = 4;
-
-  }
 
   public static final class SwerveConstants {
-
-    /*Coding Swerve
-    1) If controler is diffent from previes year change Drive Controls
-    2) Set how far apart the wheels are in SwevreConstants
-    3) Set the Diameter of the wheel in Wheel Diameter
-    4) Get gear ratio off of Swerve Drive Specialties and set the in Gear Ratio
-    5) Get max thoetical speeds from Swerve Drive Specialties best off of motor we are using
-    6) Set all Sparks/Talons/Encoder/Pigeons to the correct ID
-    7) If Pigeon is not mounted with the X-axis faceing the front of the bot change NormalPigeonOfSet
-    8) Then set of "absolute encoder offsets" to zero deploy code and then use a STRAIGHT piece of hard something 
-    to make the wheel all face forward with gear to the inside of the bot
-    9) DO NOT PLACE BOT on the ground tip it up so you can see the wheels drive forward use 
-    "Change Driver Motor Derection" to change derection as needed
-    10) Set Max TeleOp Speed based on driver prefernce and Choreo
-    11) At this point the robot should be driveable how ever it is very far from being a reliable drive base in auto
-    or consistent estimating its POSE without apriltags view Swerve Calibration to make these thing happen
-
-
     /* Drive Controls */
     public static final int translationAxis = 1;
     public static final int strafeAxis = 0;
@@ -230,7 +83,7 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static final double wheelCircumference = wheelDiameter * Math.PI;
 
     /* Gear Ratio */
-    public static final double driveGearRatio = 5.14; // Mk4 drive ratio
+    public static final double driveGearRatio = 6.12; // Mk4 drive ratio
     public static final double angleGearRatio = 12.8; // Mk4 steer ratio   
     
     /* Swerve Profiling Values */
@@ -263,7 +116,7 @@ import frc.robot.subsystems.Drive.SwerveBase;
 
     /* TeleOp Swerve Constants *///Tune a little higher then what driver is confetable driving for Fast and normal
     public static double kTeleDriveMaxSpeedMetersPerSecondFast = 5.5;//Try getting this value from Choreo
-    public static double kTeleDriveMaxSpeedMetersPerSecondNormal = 0.5; 
+    public static double kTeleDriveMaxSpeedMetersPerSecondNormal = 2.0; 
     public static double kTeleDriveMaxSpeedMetersPerSecondSlow = 0.125;   
 
     public static double kTeleDriveMaxSpeedMetersPerSecond = kTeleDriveMaxSpeedMetersPerSecondNormal;  
@@ -314,20 +167,20 @@ import frc.robot.subsystems.Drive.SwerveBase;
      //public static double rearRight_Rotation_kP = 0.5;
 
     /*PIDs for Indivual Motors */
-    public static double frontLeft_Drive_kP = 1.004;
-    public static double frontLeft_Rotation_kP = 0.5;
+    public static double frontLeft_Drive_kP = 14.1207;//14.1207
+    public static double frontLeft_Rotation_kP = 5.0;
 
-    public static double frontRight_Drive_kP = 0.992;
-    public static double frontRight_Rotation_kP = 0.5;
+    public static double frontRight_Drive_kP = 14.1125;//14.1125
+    public static double frontRight_Rotation_kP = 5.0;
 
-    public static double rearLeft_Drive_kP =  0.9885;
-    public static double rearLeft_Rotation_kP = 0.5;
+    public static double rearLeft_Drive_kP =  14.347;//14.347
+    public static double rearLeft_Rotation_kP = 5.0;
 
-    public static double rearRight_Drive_kP = 0.999;
-    public static double rearRight_Rotation_kP = 0.5;
+    public static double rearRight_Drive_kP = 14.18;//14.18
+    public static double rearRight_Rotation_kP = 5.0;
 
     /* Calibration Factor to Help offest for weight start with this at one*/
-    public static double calibrationFactorSB = 1.17;//1.11
+    public static double calibrationFactorSB = 1.0;//1.11
 
 
     //The following should not be touch 
@@ -391,20 +244,20 @@ import frc.robot.subsystems.Drive.SwerveBase;
     //     new Translation3d(0.3109483, 0.0631137, -0.567547072),
     //     new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-135.0)));
     public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_5 = new Transform3d(
-        new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
-        new Rotation3d(30.0, Units.degreesToRadians(0.0), Units.degreesToRadians(0)));
+        new Translation3d(0.0, 0, 0.0),//0.072, -0.311, 0.669
+        new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(0)));
     
         //Main Note Camera Assumed to be center 
      public static final Transform3d Note_Camera_Main_To_Robot = new Transform3d(
-        new Translation3d(0.18, 0.0, 0.38),//0.072, -0.311, 0.669
+        new Translation3d(0.0, 0.0, 0.0),//0.072, -0.311, 0.669
         new Rotation3d(Units.degreesToRadians(0.0),15.0, Units.degreesToRadians(0.0)));
 
       public static final Transform3d Note_Camera_Assistant1_To_Robot = new Transform3d(
-        new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
+        new Translation3d(0.0, 0.0, 0.0),//0.072, -0.311, 0.669
         new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
 
       public static final Transform3d Note_Camera_Assistant2_To_Robot = new Transform3d(
-        new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
+        new Translation3d(0.0, 0.0, 0.0),//0.072, -0.311, 0.669
         new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
     
     

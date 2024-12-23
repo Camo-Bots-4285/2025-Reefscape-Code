@@ -4,7 +4,6 @@
 
 package frc.robot.commands.Hybrid.LineBreakFullShooter;
 
-import frc.robot.Constants.ArmPivotConstants;
 import frc.robot.Constants.LineBreakConstants;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
