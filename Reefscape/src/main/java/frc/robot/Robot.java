@@ -103,8 +103,12 @@ public static RobotContainer m_robotContainer;
   @Override
   public void autonomousInit() {
    // m_robotContainer.m_ArmPivotSubsystem.setGoalPose();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+   // 2025 - pathplanner comment out till available
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    m_autonomousCommand = null;
+    
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

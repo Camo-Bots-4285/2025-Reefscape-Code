@@ -2,9 +2,13 @@ package frc.robot.subsystems.Drive;
 
 import java.lang.module.Configuration;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.core.*;
+
+// Old Modules from older phoenix
+//import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+//import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+//import com.ctre.phoenix.sensors.CANCoder;
 //import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -76,7 +80,7 @@ public class SwerveModule extends SubsystemBase {
   public final TalonFXConfigurator rotationEncoder;
   public final TalonFXConfigurator driveEncoder;
 
-  private final CANCoder canCoder;
+  private final CANcoder canCoder;
 
   // absolute offset for the CANCoder so that the wheels can be aligned when the
   // robot is turned on
@@ -172,7 +176,7 @@ public class SwerveModule extends SubsystemBase {
 
  
     //get canCoder
-    canCoder = new CANCoder(canCoderId);
+    canCoder = new CANcoder(canCoderId);
   
 
     //Set the offset to make the wheel go "staight"
@@ -255,7 +259,9 @@ public class SwerveModule extends SubsystemBase {
 
     // configure the CANCoder to output in unsigned (wrap around from 360 to 0
     // degrees)
-    canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+   
+    // TODO - I cannot find where this is set in phoenix 
+    //canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
 
   
 
@@ -279,7 +285,7 @@ public class SwerveModule extends SubsystemBase {
 
   public Rotation2d getCanCoderAngle() {
 
-    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()) - offset.getRadians())
+    double unsignedAngle = (canCoder.getAbsolutePosition().getValueAsDouble() - offset.getRadians())
         % (2 * Math.PI);
 
     return new Rotation2d(unsignedAngle);

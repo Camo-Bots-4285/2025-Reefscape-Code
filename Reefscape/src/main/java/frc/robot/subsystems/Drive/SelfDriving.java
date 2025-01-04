@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Set;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -167,27 +167,27 @@ public static PIDController MoveToPoseRotation = new PIDController(0.00895, 0, 0
 
 /*Added 10/27/2024 has to be tested this will allow for robot to move not in a straight line 
 making it easier to make zone*/
-public static Command getAutoDrivingPath(int pathnumber) {
+// public static Command getAutoDrivingPath(int pathnumber) {
 
-    if(RobotState.isAutonomous()==true){
-        return AutoBuilder.buildAuto("StraitLineTest");
-    }
-    else if(RobotState.isAutonomous()==false){
+//     if(RobotState.isAutonomous()==true){
+//        // return AutoBuilder.buildAuto("StraitLineTest");
+//     }
+//     else if(RobotState.isAutonomous()==false){
 
-        if(pathnumber == 1){
-        return AutoBuilder.buildAuto("StraitLineTest");
-        }
-        if(pathnumber == 2){
-        return AutoBuilder.buildAuto("StraitLineTest");
-        }
-        if(pathnumber == 3){
-        return AutoBuilder.buildAuto("StraitLineTest");
-        }
-        else{return AutoBuilder.buildAuto("StraitLineTest");}
-    }
-    else{ return AutoBuilder.buildAuto("StraitLineTest");}
+//         if(pathnumber == 1){
+//         //return AutoBuilder.buildAuto("StraitLineTest");
+//         }
+//         if(pathnumber == 2){
+//         // return AutoBuilder.buildAuto("StraitLineTest");
+//         }
+//         if(pathnumber == 3){
+//         //return AutoBuilder.buildAuto("StraitLineTest");
+//         }
+//         else{return AutoBuilder.buildAuto("StraitLineTest");}
+//     }
+//     else{ return AutoBuilder.buildAuto("StraitLineTest");}
 
-}
+// }
 
 
 

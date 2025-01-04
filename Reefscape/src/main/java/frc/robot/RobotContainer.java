@@ -28,8 +28,8 @@ import frc.robot.Constants.*;
 import java.util.function.BiFunction;
 import java.util.function.DoubleSupplier;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+//import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
@@ -272,8 +272,8 @@ public class RobotContainer {
   
       // Lets Pathplanner acsess commands 
     
-      NamedCommands.registerCommand("Align", (new AlignPoseSpeaker(m_swerveBase)));
-      NamedCommands.registerCommand("MovetoNote", (new MoveToNote(m_swerveBase)));
+      //NamedCommands.registerCommand("Align", (new AlignPoseSpeaker(m_swerveBase)));
+      //NamedCommands.registerCommand("MovetoNote", (new MoveToNote(m_swerveBase)));
   
   
   
@@ -402,10 +402,10 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    //public Command getAutonomousCommand() {
       // An example command will be run in autonomous
       //return Autos.exampleAuto(m_exampleSubsystem);
-      return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
+      //return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
       //if you want hard coded auto do "AutoName"
     //   Command autonomousCommand = new AutoTest(
     //   m_shooter,
@@ -417,7 +417,7 @@ public class RobotContainer {
     //  );
   
       //return autonomousCommand;
-    }
+    //}
   
     public SwerveBase getSwerveSubsytem() {
       return m_swerveBase;

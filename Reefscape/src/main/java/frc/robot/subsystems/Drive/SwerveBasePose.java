@@ -21,21 +21,26 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.config.*;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+
+// 2025 - commented out till pathplanner is fixed
+// import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.config.RobotConfig;
+// import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+// import com.pathplanner.lib.path.PathConstraints;
+// import com.pathplanner.lib.config.*;
+// import com.pathplanner.lib.path.PathPlannerTrajectory;
+// import com.pathplanner.lib.path.PathPoint;
+// import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+// import com.pathplanner.lib.util.PIDConstants;
+// import com.pathplanner.lib.util.ReplanningConfig;
 
 import java.sql.Driver;
 
-import com.ctre.phoenix.sensors.Pigeon2Configuration;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+//import com.ctre.phoenix.sensors.Pigeon2Configuration;
+//import com.ctre.phoenix.sensors.WPI_Pigeon2;
+
+import com.ctre.phoenix6.sim.Pigeon2SimState;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -48,13 +53,13 @@ import frc.robot.Constants;
 
 
 
-public class SwerveBasePose extends SwerveBase{ 
+public class SwerveBasePose extends SwerveBase { 
 
     public static double currentPoseX;
     public static double currentPoseY;
     public static double currentPoseRotation;
 
-    public SwerveBasePose(){
+    public SwerveBasePose() {
 
         odometry.resetPosition(new Rotation2d(), getModulePositions(), new Pose2d());
 
@@ -93,49 +98,41 @@ public class SwerveBasePose extends SwerveBase{
 
     //Load the RobotConfig from the GUI settings. You should probably
     // store this in your Constants file
-    RobotConfig config;
-    try{
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+    // RobotConfig config;
+    // try{
+    //   config = RobotConfig.fromGUISettings();
+    // } catch (Exception e) {
+    //   // Handle exception as needed
+    //   e.printStackTrace();
+    // }
 
+    // Commented out till pathplanner is fixed
     // 2025 version
     // Configure AutoBuilder last
-    AutoBuilder.configure(
-            this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> robotRelativeDrive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            config, // The robot configuration
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    // AutoBuilder.configure(
+    //         this::getPose, // Robot pose supplier
+    //         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+    //         this::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    //         (speeds, feedforwards) -> robotRelativeDrive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+    //         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+    //                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+    //                 new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+    //         ),
+    //         config, // The robot configuration
+    //         () -> {
+    //           // Boolean supplier that controls when the path will be mirrored for the red alliance
+    //           // This will flip the path being followed to the red side of the field.
+    //           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
-
-
-
-
-
-
-
-
-
-  }
+    //           var alliance = DriverStation.getAlliance();
+    //           if (alliance.isPresent()) {
+    //             return alliance.get() == DriverStation.Alliance.Red;
+    //           }
+    //           return false;
+    //         },
+    //         this // Reference to this subsystem to set requirements
+    // );
+}
   public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
   private final double SCALE_X = -1/0.9;
   private final double SCALE_Y = -1/0.9;
@@ -161,7 +158,9 @@ public class SwerveBasePose extends SwerveBase{
 
     // get the current heading of the robot based on the gyro
     public Rotation2d getHeadingPose() {
-        return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
+        return Rotation2d.fromDegrees(getPigeonYaw() + SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
+      // Old Version
+      //  return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
       }
 
     public Pose2d getScaledPose() {

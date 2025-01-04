@@ -37,8 +37,9 @@ drive = swerveBase;
   public void execute() {
  
     //This number should be a vaible that is linked to the path number
-    m_autonomousdrivepath = SelfDriving.getAutoDrivingPath(1);
-
+    // Commented out 2025
+    //m_autonomousdrivepath = SelfDriving.getAutoDrivingPath(1);
+    m_autonomousdrivepath = null;
     // schedule the autonomous command (example)
     if (m_autonomousdrivepath != null) {
       m_autonomousdrivepath.schedule();
