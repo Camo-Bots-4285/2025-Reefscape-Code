@@ -44,7 +44,7 @@ public class PhotonRunnable implements Runnable {
       layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
       if (photonCamera != null) {
         photonPoseEstimator = new PhotonPoseEstimator(
-            layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, cameraToRobot.inverse());
+            layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraToRobot.inverse());
       }
     this.photonPoseEstimator = photonPoseEstimator;
   }

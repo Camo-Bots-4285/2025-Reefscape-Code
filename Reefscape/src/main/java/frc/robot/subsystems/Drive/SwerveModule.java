@@ -3,13 +3,11 @@ package frc.robot.subsystems.Drive;
 import java.lang.module.Configuration;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 //import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-//import com.google.flatbuffers.FlexBuffers.Key;
 import com.ctre.phoenix6.*;
 import com.ctre.phoenix6.configs.*;
 
@@ -60,9 +58,10 @@ public class SwerveModule extends SubsystemBase {
     private int currentLoopIndex = 0; // Index for the current loop iteration
     private double lastTime; // To store the last timestamp of the loop for calculating delta-time
     public double timer;
+    
     // For inverting D
-  private double previousError = 0.0;  // Initialize the previous error to zero
-  private double integral = 0.0;       // Initialize the integral to zero
+    private double previousError = 0.0;  // Initialize the previous error to zero
+    private double integral = 0.0;       // Initialize the integral to zero
 
 
   public TalonFX getDriveMotor() {
@@ -109,22 +108,28 @@ public class SwerveModule extends SubsystemBase {
     swerveDrive = swerveSubsystem;
   
     //Defines what Talon to target
-    driveMotor = new TalonFX(driveMotorId, "rio");
+    driveMotor = new TalonFX(driveMotorId);
 
     //Get encoder for that Talon
     var driveConfig = new TalonFXConfiguration();
 
-    //Turns on current limitor
-    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+      // Turn on current limiter
+      driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+      // Enables the current limiting to prevent excessive current draw, which could trip the breaker or damage the system.
 
-    // Set the supply current limit to 40 amps (continuous)
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;//amps
+      // Ensures the motor can run continuously without exceeding the limits of the PDH breaker.
+      driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0; // amps
 
-    // Set the supply peak current to 60 amps (short bursts)
-    driveConfig.CurrentLimits.SupplyCurrentThreshold = 70.0;//amps
+      // Allows brief bursts of high current, such as during acceleration or when overcoming a heavy load.
+      driveConfig.CurrentLimits.SupplyCurrentLowerLimit = 80.0; // amps
+      // Peak current is set to 70 amps, matching the breaker limit. This allows the motor to draw up to 70 amps for a short period 
+      // without triggering the breaker. Since FRC breakers handle high current bursts, this setting is safe for short-term acceleration needs.
 
-    // Set the time (in seconds) the motor can run at peak current before limiting kicks in
-    driveConfig.CurrentLimits.SupplyTimeThreshold = 1.0; //second
+      // Set the time (in seconds) the motor can run at peak current before limiting kicks in
+      driveConfig.CurrentLimits.SupplyCurrentLowerTime = 1.0; // second
+      // This allows the motor to run at peak current for 1 second before limiting starts. 
+      // 1 second is usually enough for the motor to handle short bursts of high current during acceleration or heavy loads without tripping the breaker.
+
 
     //Applies current limitor
     driveMotor.getConfigurator().apply(driveConfig);
@@ -142,7 +147,7 @@ public class SwerveModule extends SubsystemBase {
  */
 
     //Defines what Talon to target
-    rotationMotor = new TalonFX(rotationMotorId, "rio");
+    rotationMotor = new TalonFX(rotationMotorId);
 
     var rotationConfig = new TalonFXConfiguration();
 
@@ -150,13 +155,13 @@ public class SwerveModule extends SubsystemBase {
     rotationConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // Set the supply current limit to 40 amps (continuous)
-    rotationConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    rotationConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
 
     // Set the supply peak current to 60 amps (short bursts)
-    rotationConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
+    rotationConfig.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 
     // Set the time (in seconds) the motor can run at peak current before limiting kicks in
-    rotationConfig.CurrentLimits.SupplyTimeThreshold = 1.0; // 1 second
+    rotationConfig.CurrentLimits.SupplyCurrentLowerLimit = 1.0; // 1 second
 
     //Applies current limitor
     rotationMotor.getConfigurator().apply(rotationConfig);
@@ -730,7 +735,7 @@ public void periodic(){
  SmartDashboard.putNumber("Time Teleop" , Robot.teleopTimeFinal);
      SmartDashboard.putNumber("time" , timer);
          // // Initialize the timer
-      timer = Robot.teleopTime;
+      timer = Robot.Time;
 }
 }
 

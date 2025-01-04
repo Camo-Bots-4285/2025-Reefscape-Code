@@ -48,6 +48,7 @@ public class AprilTagSubsystem extends SubsystemBase {
   boolean sawTag = false;
   private OriginPosition originPosition;
   private static boolean doRejectUpdate = false;
+
  
   //This is to import alll Photon apriltag camera just add the name in CameraName and duplicate code to make funtina;
   PhotonRunnable photonEstimator1 = new PhotonRunnable("Camera 1", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_1);
@@ -125,35 +126,36 @@ public class AprilTagSubsystem extends SubsystemBase {
   }
       //Was add to help better limelight it work but if limelight disconects code does not work need to test and find a solution
       public void  MegaTag2 (){
-        //  int[] validIDs = {3,4};
-        //   LimelightHelpers.SetFiducialIDFiltersOverride("limelight-tags", validIDs);
+    //     //  int[] validIDs = {3,4};
+    //     //   LimelightHelpers.SetFiducialIDFiltersOverride("limelight-tags", validIDs);
 
     
-      // LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBasePose.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/SwerveBase.pigeonSensor.getYaw(), 0.0, 0, 0, 0, 0);
-      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
-      // if(Math.abs(SwerveBase.pigeonSensor.getRate()) > 720 ) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-      // {
-      //   doRejectUpdate = true;
-      // }
-      // else if( mt2.tagCount == 0)
-      // {
-      //   doRejectUpdate = true;
-      // }
-      // else{
-      //    doRejectUpdate = false;
-      // }
+    //   LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBasePose.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/RobotContainer. getSwerveSubsytem().getPigeonYaw(), 0.0, 0, 0, 0, 0);
+    //   LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
+  
+    //   if(Math.abs(RobotContainer. getSwerveSubsytem().getPigeonYawRate()) > 720 ) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    //   {
+    //     doRejectUpdate = true;
+    //   }
+    //   else if( mt2.tagCount == 0)
+    //   {
+    //     doRejectUpdate = true;
+    //   }
+    //   else{
+    //      doRejectUpdate = false;
+    //   }
       
-      // if(doRejectUpdate == false)
-      // {
-      //  //Robot.m_robotContainer.m_swerveBasePose.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      //  Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(
-      //       mt2.pose,
-      //       mt2.timestampSeconds);
-       //System.out.println("Calculating");
-// 
-          //}
+    //   if(doRejectUpdate == false)
+    //   {
+    //    //Robot.m_robotContainer.m_swerveBasePose.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+    //    Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(
+    //         mt2.pose,
+    //         mt2.timestampSeconds);
+    //    System.out.println("Calculating");
+
+    //       }
         
-     // System.out.println(doRejectUpdate);
+    //  // System.out.println(doRejectUpdate);
       }
 
   //Runs only on TeleOp because it is call to run peridical durning in in robot.Java

@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -21,20 +20,21 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.path.PathPoint;
-
-
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import frc.robot.Constants.*;
 
 import java.sql.Driver;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
-
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -44,20 +44,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants;
-import dev.doglog.DogLog;
+import com.ctre.phoenix.sensors.PigeonIMU;
+//import dev.doglog.DogLog;
 
 
 
-
-public class SwerveBase extends SubsystemBase { 
-  
-  // Declare a PigeonIMU object and a motor for demonstration purposes
+public class SwerveBase extends SubsystemBase {  
   private PigeonIMU pigeonIMU;
-
-  // Declare variables to store IMU data
-  private double[] imuData = new double[3]; // [yaw, pitch, roll]
-
-
+  
   private double oldPigeonYaw = 0.0;
   public static boolean  isFieldRelative1 = true;
 
@@ -69,13 +63,6 @@ public class SwerveBase extends SubsystemBase {
   public static boolean GettingNote;
 
   public static double SwerveTuneingkP;
-
-
-  private final int loopCount; // Number of loops for averaging velocity changes
-  private double[] yawHistory; // Array to store velocity data for each loop
-  private int currentLoopIndex = 0; // Index for the current loop iteration
-  private double lastTime; // To store the last timestamp of the loop for calculating delta-time
-  public double timer;
 
 //Checks if setNeedMoreAmps is True of false and change need more
 //amps based on if the command is being called
@@ -91,9 +78,13 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
 
   public SwerveBase() {
 
-    // Initialize the PigeonIMU connected to CAN ID 1 (adjust as necessary)
-    pigeonIMU = new PigeonIMU(Constants.SwerveConstants.PIGEON_SENSOR_ID);
-    zeroPigeonYaw();
+    pigeonSensor = new WPI_Pigeon2(Constants.SwerveConstants.PIGEON_SENSOR_ID);
+    pigeonConfig = new Pigeon2Configuration();
+    pigeonSensor.configFactoryDefault();
+    pigeonSensor.reset();
+    zeroPigeon();
+
+    pigeonSensor.getAllConfigs(pigeonConfig);
 
     // initialize the rotation offsets for the CANCoders
     frontLeft.initRotationOffset();
@@ -121,14 +112,20 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
     frontRight.getRotationMotor().setInverted(false);
     frontLeft.getRotationMotor().setInverted(false);
 
-    this.loopCount = 3;//if you change need to change accleration
-    this.yawHistory = new double[loopCount];
-
   }
   
   /*
    * The following is the Method that are used to interact with the pigeon
    */
+
+  // Return Pigeon sensor
+   public WPI_Pigeon2 getPigeonSensor() {
+    return pigeonSensor;
+  }
+
+  public Rotation2d getGyroscopeRotation() {
+    return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
+  }
 
      private boolean needPigeonReset = false;
    //Is used to help zero pigeon when method is called
@@ -136,73 +133,18 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
     needPigeonReset = set;
   }
 
-  //Zeros Pigeon sencor Yaw
-  public void zeroPigeonYaw() {
-    // Reset yaw to 0 degrees
-    pigeonIMU.setYaw(0);  // Set yaw to 0 degrees to reset the heading
+  //Zeros Pigeon sencor
+  public void zeroPigeon() {
+    pigeonSensor.reset();
   }
-
-    //Set a value Pigeon sencor Yaw
-    public void setPigeonYaw(double Yaw_Degrees) {
-      // Reset yaw to 0 degrees
-      pigeonIMU.setYaw(Yaw_Degrees);  // Set yaw to 0 degrees to reset the heading
-    }
-
-// Method to get the yaw value (heading) from the IMU
-public double getPigeonYaw() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[0];  // Return the yaw value (heading in degrees)
-}
-
-public double getPigeonYawRate(){
-  // Calculate deltaTime (time difference between current and previous loop)
-  double deltaTime = timer - lastTime;
-  lastTime = timer; // Update the lastTime for the next loop
-
-  // Store the current velocity in the velocity history array
-  yawHistory[currentLoopIndex] = getPigeonYaw();
-
-  // Increment the loop counter and wrap around if necessary
-  currentLoopIndex = (currentLoopIndex + 1) % loopCount;
-
-  // Calculate the average velocity change over the loop history
-  double yawChangeSum = 0;
-  for (int i = 1; i < loopCount; i++) {
-      int prevIndex = (currentLoopIndex - i + loopCount) % loopCount;
-      yawChangeSum += yawHistory[prevIndex] - yawHistory[(prevIndex - 1 + loopCount) % loopCount];
-  }
-
-  // Average the velocity changes and divide by deltaTime to get acceleration
-  double averageYawRateChange = yawChangeSum / loopCount;
-  double yawRate = averageYawRateChange / deltaTime;
-  return yawRate;
-}
-
-
-// Method to get the pitch value from the IMU
-public double getPigeonPitch() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[1];  // Return the pitch value (in degrees)
-}
-
-// Method to get the roll value from the IMU
-public double getPigeonRoll() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[2];  // Return the roll value (in degrees)
-}
-
-public Rotation2d getGyroscopeRotation() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data
-  return Rotation2d.fromDegrees(imuData[0]);   // Return the yaw value which represents the compass heading
-}
 
   //to be used for Driving the robot the heading whille be temparrly set to zero when driving in robot centric
   public Rotation2d getHeadingDrive() {
      if(isFieldRelative1 == true){
-    return Rotation2d.fromDegrees(getPigeonYaw() + SwerveConstants.NormalPigeonOfSet);
+    return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
     }
     if(RobotState.isAutonomous()){
-      return Rotation2d.fromDegrees(getPigeonYaw() + SwerveConstants.NormalPigeonOfSet);
+      return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
     }
     else{
       return Rotation2d.fromDegrees(SwerveConstants.NormalPigeonOfSet);
@@ -320,7 +262,7 @@ public Rotation2d getGyroscopeRotation() {
     // this is where feild relitive is activated was changed when trying to fix the pigeon yaw not going back to normal after
        if (needPigeonReset) {
       needPigeonReset = false;
-      setPigeonYaw(oldPigeonYaw);
+      pigeonSensor.setYaw(oldPigeonYaw);
       isFieldRelative1 = true;
     }
 
@@ -395,12 +337,12 @@ public Rotation2d getGyroscopeRotation() {
     SmartDashboard.putNumber("RotationMotorFR", frontRight.getIntegratedAngle().getRotations());
     SmartDashboard.putNumber("RotationMotorFL", frontLeft.getIntegratedAngle().getRotations());
 
-    // SmartDashboard.putString("Pigeon Rotation",
-    // pigeonSensor.getRotation2d().toString());
+    SmartDashboard.putString("Pigeon Rotation",
+    pigeonSensor.getRotation2d().toString());
     SmartDashboard.putNumber("Pigeon Yaw",
-    getPigeonYaw());
-    SmartDashboard.putString("Pigeon Compass",
-    getGyroscopeRotation().toString());
+    pigeonSensor.getYaw());
+    SmartDashboard.putNumber("Pigeon Compass",
+    pigeonSensor.getCompassHeading());
 
     SmartDashboard.putString("FL Wheel Angle", frontLeft.getCanCoderAngle().toString());
     SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
@@ -417,42 +359,43 @@ public Rotation2d getGyroscopeRotation() {
     SmartDashboard.putNumber("RL Wheel Speed2", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
     SmartDashboard.putNumber("RR Wheel Speed2", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
     
-    timer = Robot.Time;
+
  }
 
  private void DogLog(){
-    //Pigeon Data
-    DogLog.log("/SwerveBase/Pigeon/Yaw", getPigeonYaw());
-    DogLog.log("/SwerveBase/Pigeon/Pitch",getPigeonPitch());
-    DogLog.log("/SwerveBase/Pigeon/Roll", getPigeonRoll());
-    DogLog.log("/SwerveBase/Pigeon/Yaw_Rate", getPigeonYawRate());
-    DogLog.log("/SwerveBase/Pigeon/Compass", getGyroscopeRotation());
-    DogLog.log("/SwerveBase/Pigeon/Drive_Heading", getHeadingDrive());
+    // //Pigeon Data
+    // DogLog.log("/SwerveBase/Pigeon/Rotation2D", pigeonSensor.getRotation2d().toString());
+    // DogLog.log("/SwerveBase/Pigeon/Yaw", pigeonSensor.getYaw());
+    // DogLog.log("/SwerveBase/Pigeon/Pitch",pigeonSensor.getPitch());
+    // DogLog.log("/SwerveBase/Pigeon/Roll", pigeonSensor.getRoll());
+    // DogLog.log("/SwerveBase/Pigeon/Rate", pigeonSensor.getRate());
+    // DogLog.log("/SwerveBase/Pigeon/Compass", pigeonSensor.getCompassHeading());
+    // DogLog.log("/SwerveBase/Pigeon/Compass", getHeadingDrive());
 
-    //CanCoder Angle
-    DogLog.log("/SwerveBase/FL/CanCoderAngle", frontLeft.getCanCoderAngle());
-    DogLog.log("/SwerveBase/FR/CanCoderAngle", frontRight.getCanCoderAngle());
-    DogLog.log("/SwerveBase/RL/CanCoderAngle", rearLeft.getCanCoderAngle());
-    DogLog.log("/SwerveBase/RR/CanCoderAngle", rearRight.getCanCoderAngle());
+    // //CanCoder Angle
+    // DogLog.log("/SwerveBase/FL/CanCoderAngle", frontLeft.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/FR/CanCoderAngle", frontRight.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/RL/CanCoderAngle", rearLeft.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/RR/CanCoderAngle", rearRight.getCanCoderAngle());
 
-    //Vaule of wheels that are being ready
-    DogLog.log("/SwerveBase/FL/Wheel_Angle", frontLeft.getIntegratedAngle());
-    DogLog.log("/SwerveBase/FR/Wheel_Angle", frontRight.getIntegratedAngle());
-    DogLog.log("/SwerveBase/RL/Wheel_Angle", rearLeft.getIntegratedAngle());
-    DogLog.log("/SwerveBase/RR/Wheel_Angle", rearRight.getIntegratedAngle());
+    // //Vaule of wheels that are being ready
+    // DogLog.log("/SwerveBase/FL/Wheel_Angle", frontLeft.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/FR/Wheel_Angle", frontRight.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/RL/Wheel_Angle", rearLeft.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/RR/Wheel_Angle", rearRight.getIntegratedAngle());
 
-    //Value of wheel speeds
-    DogLog.log("/SwerveBase/FL/Wheel_Speed", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
-    DogLog.log("/SwerveBase/FR/Wheel_Speed", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
-    DogLog.log("/SwerveBase/RL/Wheel_Speed", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
-    DogLog.log("/SwerveBase/RR/Wheel_Speed", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
+    // //Value of wheel speeds
+    // DogLog.log("/SwerveBase/FL/Wheel_Speed", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/FR/Wheel_Speed", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/RL/Wheel_Speed", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/RR/Wheel_Speed", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
 
-    //Logs same value as above but might be messy need to see
-    DogLog.log("/SwerveBase/ModuleStates/ModuleStates",getModuleStates());
+    // //Logs same value as above but might be messy need to see
+    // DogLog.log("/SwerveBase/ModuleStates/ModuleStates",getModuleStates());
 
-    //Values that help run diferent types of code
-    DogLog.log("/SwerveBase/Values/isFeildRelative1",isFieldRelative1);
-    DogLog.log("/SwerveBase/Values/AllowMainDriving",AllowMainDriving);
+    // //Values that help run diferent types of code
+    // DogLog.log("/SwerveBase/Values/isFeildRelative1",isFieldRelative1);
+    // DogLog.log("/SwerveBase/Values/AllowMainDriving",AllowMainDriving);
 
  } 
 
@@ -521,53 +464,5 @@ public Rotation2d getGyroscopeRotation() {
     setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// /// Custom Sendable class for the swerve drive
-// private class SwerveDriveSendable implements Sendable {
-//   @Override
-//   public void initSendable(SendableBuilder builder) {
-//       builder.setSmartDashboardType("SwerveDrive");
-
-//       // Use lambdas to access module properties
-//       builder.addDoubleProperty("Front Left Angle", 
-//           () -> frontLeft.getIntegratedAngle().getRadians(), null);
-//       builder.addDoubleProperty("Front Left Velocity", 
-//           () -> frontLeft.getCurrentVelocityMetersPerSecond(), null);
-
-//       builder.addDoubleProperty("Front Right Angle", 
-//           () -> frontRight.getIntegratedAngle().getRadians(), null);
-//       builder.addDoubleProperty("Front Right Velocity", 
-//           () -> frontRight.getCurrentVelocityMetersPerSecond(), null);
-
-//       builder.addDoubleProperty("Rear Left Angle", 
-//           () -> rearLeft.getIntegratedAngle().getRadians(), null);
-//       builder.addDoubleProperty("Rear Left Velocity", 
-//           () -> rearLeft.getCurrentVelocityMetersPerSecond(), null);
-
-//       builder.addDoubleProperty("Rear Right Angle", 
-//           () -> rearRight.getIntegratedAngle().getRadians(), null);
-//       builder.addDoubleProperty("Rear Right Velocity", 
-//           () -> rearRight.getCurrentVelocityMetersPerSecond(), null);
-
-//       builder.addDoubleProperty("Robot Angle", 
-//           () -> getHeadingDrive().getRadians(), null);
-//   }}
-
 }
+

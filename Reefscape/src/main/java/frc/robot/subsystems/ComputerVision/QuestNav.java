@@ -63,6 +63,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import dev.doglog.DogLog;
 
 
 public class QuestNav extends SubsystemBase {
@@ -341,10 +342,9 @@ private Translation2d resetTranslationValue = new Translation2d(0, 0);
   }
 
   public void DogLog(){
-   // DogLog.log("/PoseEstimation/QuestNav/", TargetPoseX);
-    // DogLog.log("/SelfDriving/Position/TargetY", TargetPoseY);
-    // DogLog.log("/SelfDriving/Position/TargetRotation", TargetPoseRotation);
-
+  //  DogLog.log("/PoseEstimation/QuestNav/", TargetPoseX);
+  //   DogLog.log("/SelfDriving/Position/TargetY", TargetPoseY);
+  //   DogLog.log("/SelfDriving/Position/TargetRotation", TargetPoseRotation);
 
   }
 

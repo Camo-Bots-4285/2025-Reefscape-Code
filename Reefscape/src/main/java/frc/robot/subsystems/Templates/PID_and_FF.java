@@ -35,10 +35,10 @@
 //  * By selecting the appropriate method based on the system’s requirements, you can achieve optimal control, smooth motion, and precision for each mechanism.
 //  */
 
-// // import edu.wpi.first.wpilibj.TalonFX;  // Replace with your motor controller (TalonFX/TalonSRX)
+// // import edu.wpi.first.wpilibj.motorcontrol.TalonFX;  // Replace with your motor controller (TalonFX/TalonSRX)
 // // import edu.wpi.first.wpilibj.Encoder;   // Encoder to measure the feedback (position or velocity)
 // // import edu.wpi.first.wpilibj.PIDController; // For PID control
-// // import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward; // For feedforward
+// // import edu.wpi.first.math.controller.SimpleMotorFeedforward; // For feedforward
 // // import edu.wpi.first.wpilibj2.command.SubsystemBase; // Base class for subsystems
 // // import edu.wpi.first.wpilibj.Timer;  // Timer to simulate periodic updates
 
