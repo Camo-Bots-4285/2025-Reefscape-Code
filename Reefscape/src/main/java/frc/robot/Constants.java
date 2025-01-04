@@ -318,19 +318,19 @@ import frc.robot.subsystems.Drive.SwerveBase;
     //     new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(45)));
     
         public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_1 = new Transform3d(
-        new Translation3d(-0.063, 0.3125, 0.562),// Get from CAD Model In meters-0.063, -0.3125, 0.562
-        new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-135)));//
+        new Translation3d(-0.075, -0.3075, 0.584),// Get from CAD Model In meters-0.063, -0.3125, 0.562
+        new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(45)));//
 
     public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_2 = new Transform3d(
-        new Translation3d(0.063, -0.3125, 0.562),//0.063, -0.3125, 0.562
+        new Translation3d(-0.075, 0.3075, 0.584),//0.063, -0.3125, 0.562
         new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-45)));
 
     public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_3 = new Transform3d(
-        new Translation3d(-0.063, 0.3125, 0.562),//0.063, 0.3125, 0.562
-        new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(45)));
+        new Translation3d(0.075, -0.3075, 0.584),//0.063, 0.3125, 0.562
+        new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(-135)));
 
     public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_4 = new Transform3d(
-        new Translation3d(-0.063, -0.3125, 0.562),//-0.063, 0.3125, 0.562
+        new Translation3d(0.075, 0.3075, 0.584),//-0.063, 0.3125, 0.562
         new Rotation3d(0.0, Units.degreesToRadians(0.0), Units.degreesToRadians(135)));//-225
     //Lime Light 
     //          CAD             RealLife   OldVaules 
@@ -399,17 +399,6 @@ public static class LineBreakConstants {
     public static final boolean LINEBREAK_OPEN = true;
   }
 
-  public static class BuildConstants {
-    public static final String MAVEN_GROUP = "";
-    public static final String MAVEN_NAME = "crescendo";
-    public static final String VERSION = "unspecified";
-    public static final int GIT_REVISION = 6;
-    public static final String GIT_SHA = "cc013129e3c7396cb75b6440b939e763719c4f9a";
-    public static final String GIT_DATE = "2024-05-28 11:17:52 EDT";
-    public static final String GIT_BRANCH = "main";
-    public static final String BUILD_DATE = "2024-07-16 15:15:26 EDT";
-    public static final long BUILD_UNIX_TIME = 1721157326492L;
-    public static final int DIRTY = 1;
-  }
+
 
  }
