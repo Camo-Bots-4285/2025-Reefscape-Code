@@ -234,9 +234,9 @@ if (set == 2){
     //Note Pose 
         if (set == 3){
 
-            TargetPoseX = NoteDetection.MainNoteXRobot + SwerveBase.currentPoseX;
-            TargetPoseY = NoteDetection.MainNoteYRobot + SwerveBase.currentPoseY;
-            // TargetPoseRotation = RobotContainer.angleController.calculate(m_swerveBase.getPose().getRotation().getRadians(), MoveToNoteByPose.NOTE_POSE.getRotation().getRadians());
+            TargetPoseX = NoteDetection.MainNoteXRobot + SwerveBasePose.currentPoseX;
+            TargetPoseY = NoteDetection.MainNoteYRobot + SwerveBasePose.currentPoseY;
+            // TargetPoseRotation = RobotContainer.angleController.calculate(m_SwerveBasePose.getPose().getRotation().getRadians(), MoveToNoteByPose.NOTE_POSE.getRotation().getRadians());
         }
 //Starting position for auto A
         if (set == 4){ 
@@ -270,14 +270,14 @@ public static void DriveCalculationPose() {
     //Because we are driving in feild centric for this command the number will change signs depending on allaince
   
    if (Constants.isRed == true){
-        PoseDifferenceX = TargetPoseX - SwerveBase.currentPoseX;
-        PoseDifferenceY = TargetPoseY - SwerveBase.currentPoseY;// Need to test might not be right
-        PoseDifferenceRotationRaw = SwerveBase.currentPoseRotation -TargetPoseRotation; // Need to test might not be right   
+        PoseDifferenceX = TargetPoseX - SwerveBasePose.currentPoseX;
+        PoseDifferenceY = TargetPoseY - SwerveBasePose.currentPoseY;// Need to test might not be right
+        PoseDifferenceRotationRaw = SwerveBasePose.currentPoseRotation -TargetPoseRotation; // Need to test might not be right   
     }
         if (Constants.isRed == false){
-        PoseDifferenceX = SwerveBase.currentPoseX - TargetPoseX;
-        PoseDifferenceY = SwerveBase.currentPoseY - TargetPoseY;// Need to test might not be right
-        PoseDifferenceRotationRaw = SwerveBase.currentPoseRotation -TargetPoseRotation;// Need to test might not be right
+        PoseDifferenceX = SwerveBasePose.currentPoseX - TargetPoseX;
+        PoseDifferenceY = SwerveBasePose.currentPoseY - TargetPoseY;// Need to test might not be right
+        PoseDifferenceRotationRaw = SwerveBasePose.currentPoseRotation -TargetPoseRotation;// Need to test might not be right
     }
 //Roation should be the same regardless of alliance
 //The following will optimize the rotation to go left or right
@@ -360,7 +360,7 @@ if(UpdatingTarget ==  false){
         //     if(Constants.isRed == true){
                
         //         //Quadrant 2
-        //        if(5.598 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 10.914  && 5.408 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 8.237 ){
+        //        if(5.598 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 10.914  && 5.408 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 8.237 ){
         //             LaneLogicPoseX = 11.914 ;
         //             LaneLogicPoseY = 7.050;
         //             LaneLogicPoseRotation = 110;
@@ -368,7 +368,7 @@ if(UpdatingTarget ==  false){
         //         }
 
         //         //Quadrant 3
-        //         if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 16.509  && 6.075 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 8.237 ){
+        //         if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 16.509  && 6.075 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 8.237 ){
         //             LaneLogicPoseX = 15.81;
         //             LaneLogicPoseY = 6.804;
         //             LaneLogicPoseRotation = 110;
@@ -378,7 +378,7 @@ if(UpdatingTarget ==  false){
 
 
         //          //Quadrant 7
-        //         if(9.769 > SwerveBase.currentPoseX && SwerveBase.currentPoseX > 6.743  && 5.408 > SwerveBase.currentPoseY  && SwerveBase.currentPoseY > 2.423){
+        //         if(9.769 > SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX > 6.743  && 5.408 > SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY > 2.423){
         //             LaneLogicPoseX = 12.00;
         //             LaneLogicPoseY = 4.78;
         //             LaneLogicPoseRotation = 180;
@@ -386,7 +386,7 @@ if(UpdatingTarget ==  false){
         //          }
 
         //          //Quadrant 8
-        //          if(9.769 < SwerveBase.currentPoseX &&   -1.7140 *(SwerveBase.currentPoseX - 10.914) + 5.408 > SwerveBase.currentPoseY  &&  SwerveBase.currentPoseY > 0.5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 && SwerveBase.currentPoseY < 5.408 && SwerveBase.currentPoseY > 2.423){
+        //          if(9.769 < SwerveBasePose.currentPoseX &&   -1.7140 *(SwerveBasePose.currentPoseX - 10.914) + 5.408 > SwerveBasePose.currentPoseY  &&  SwerveBasePose.currentPoseY > 0.5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 && SwerveBasePose.currentPoseY < 5.408 && SwerveBasePose.currentPoseY > 2.423){
         //             LaneLogicPoseX = 12.40;
         //             LaneLogicPoseY = 5.24;
         //             LaneLogicPoseRotation = 180;
@@ -394,15 +394,15 @@ if(UpdatingTarget ==  false){
 
         //          }
         //          //Quadrant 9
-        //          if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 13.469  &&  -1.7140 *(SwerveBase.currentPoseX - 10.914) + 5.408 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < -.8853 *(SwerveBase.currentPoseX - 10.914) + 6.075 &&  SwerveBase.currentPoseY > 0.5682 *(SwerveBase.currentPoseX - 15.618) + 5.046){
-        //         // if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 13.469  &&  -1.7140 *(SwerveBase.currentPoseX - 10.914) + 5.408 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < -.8853 *(SwerveBase.currentPoseX - 10.914) + 6.075 &&  SwerveBase.currentPoseY > 0.5682 *(SwerveBase.currentPoseX - 15.618) + 5.046){
+        //          if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 13.469  &&  -1.7140 *(SwerveBasePose.currentPoseX - 10.914) + 5.408 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < -.8853 *(SwerveBasePose.currentPoseX - 10.914) + 6.075 &&  SwerveBasePose.currentPoseY > 0.5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046){
+        //         // if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 13.469  &&  -1.7140 *(SwerveBasePose.currentPoseX - 10.914) + 5.408 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < -.8853 *(SwerveBasePose.currentPoseX - 10.914) + 6.075 &&  SwerveBasePose.currentPoseY > 0.5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046){
         //             LaneLogicPoseX = 12.60;
         //             LaneLogicPoseY = 5.75;
         //             LaneLogicPoseRotation = 180;
         //             System.out.println("Quadrant 9");
         //          }
         //          //Quadrant 10
-        //         if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 16.509  && -.8853 *(SwerveBase.currentPoseX - 10.914) + 6.075 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY > .5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 && SwerveBase.currentPoseY < 6.075){  
+        //         if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 16.509  && -.8853 *(SwerveBasePose.currentPoseX - 10.914) + 6.075 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY > .5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 && SwerveBasePose.currentPoseY < 6.075){  
         //             LaneLogicPoseX = 15.129;
         //             LaneLogicPoseY = 5.536;
         //             LaneLogicPoseRotation = 180;
@@ -411,7 +411,7 @@ if(UpdatingTarget ==  false){
         //          }
 
         //          //Quadrant 12
-        //         if(5.858 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 10.705  && 0 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 2.423 ){
+        //         if(5.858 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 10.705  && 0 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 2.423 ){
         //             LaneLogicPoseX = 12.031;
         //             LaneLogicPoseY = 2.50;
         //             LaneLogicPoseRotation = 180;
@@ -419,7 +419,7 @@ if(UpdatingTarget ==  false){
 
         //          }
         //          //Quadrant 13
-        //         else if(10.705 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 15.50  && 0 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < .5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 ){
+        //         else if(10.705 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 15.50  && 0 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < .5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 ){
         //             LaneLogicPoseX = 15.755;
         //             LaneLogicPoseY = 4.237;
         //             LaneLogicPoseRotation = 240;
@@ -437,7 +437,7 @@ if(UpdatingTarget ==  false){
         //         // if(Constants.isRed == true){}
 
         //         // //Quadrant 2
-        //         // if(5.598 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 10.914  && 5.408 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 8.237 ){
+        //         // if(5.598 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 10.914  && 5.408 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 8.237 ){
         //         //     LaneLogicPoseX = 15.81;
         //         //     LaneLogicPoseY = 6.804;
         //         //     LaneLogicPoseRotation = 180;
@@ -445,7 +445,7 @@ if(UpdatingTarget ==  false){
         //         // }
 
         //         //Quadrant 3
-        //          if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 16.509  && 6.075 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 8.237 ){
+        //          if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 16.509  && 6.075 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 8.237 ){
         //             LaneLogicPoseX = 9.50;
         //             LaneLogicPoseY = 6.50;
         //             LaneLogicPoseRotation = 180;
@@ -455,28 +455,28 @@ if(UpdatingTarget ==  false){
 
 
         //         //  //Quadrant 7
-        //         //   if(9.769 > SwerveBase.currentPoseX && SwerveBase.currentPoseX > 6.743  && 5.408 > SwerveBase.currentPoseY  && SwerveBase.currentPoseY > 2.423){
+        //         //   if(9.769 > SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX > 6.743  && 5.408 > SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY > 2.423){
         //         //     LaneLogicPoseX = 15.129;
         //         //     LaneLogicPoseY = 5.536;
         //         //     LaneLogicPoseRotation = 0;
         //         //     System.out.println("Quadrant 7");
         //         // }
         //          //Quadrant 8
-        //           if(9.769 < SwerveBase.currentPoseX &&   -1.7140 *(SwerveBase.currentPoseX - 10.914) + 5.408 > SwerveBase.currentPoseY  &&  SwerveBase.currentPoseY > 0.5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 && SwerveBase.currentPoseY < 5.408 && SwerveBase.currentPoseY > 2.423){
+        //           if(9.769 < SwerveBasePose.currentPoseX &&   -1.7140 *(SwerveBasePose.currentPoseX - 10.914) + 5.408 > SwerveBasePose.currentPoseY  &&  SwerveBasePose.currentPoseY > 0.5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 && SwerveBasePose.currentPoseY < 5.408 && SwerveBasePose.currentPoseY > 2.423){
         //             LaneLogicPoseX = 8.07;
         //             LaneLogicPoseY = 4.08;
         //             LaneLogicPoseRotation = 180;
         //             System.out.println("Quadrant 8");
         //          }
         //          //Quadrant 9
-        //           if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 13.469  &&  -1.7140 *(SwerveBase.currentPoseX - 10.914) + 5.408 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < -.8853 *(SwerveBase.currentPoseX - 10.914) + 6.075 &&  SwerveBase.currentPoseY > 0.5682 *(SwerveBase.currentPoseX - 15.618) + 5.046){
+        //           if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 13.469  &&  -1.7140 *(SwerveBasePose.currentPoseX - 10.914) + 5.408 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < -.8853 *(SwerveBasePose.currentPoseX - 10.914) + 6.075 &&  SwerveBasePose.currentPoseY > 0.5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046){
         //             LaneLogicPoseX = 10.04;
         //             LaneLogicPoseY = 3.63;
         //             LaneLogicPoseRotation = 180;
         //             System.out.println("Quadrant 9");
         //          }
         //          //Quadrant 10
-        //           if(10.914 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 16.509  && -.8853 *(SwerveBase.currentPoseX - 10.914) + 6.075 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY > .5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 && SwerveBase.currentPoseY < 6.075){
+        //           if(10.914 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 16.509  && -.8853 *(SwerveBasePose.currentPoseX - 10.914) + 6.075 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY > .5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 && SwerveBasePose.currentPoseY < 6.075){
         //             LaneLogicPoseX = 11.68; 
         //             LaneLogicPoseY = 4.41; 
         //             LaneLogicPoseRotation = 180;
@@ -485,7 +485,7 @@ if(UpdatingTarget ==  false){
         //          }
 
         //         //  //Quadrant 12
-        //         // else if(5.858 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 10.705  && 0 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < 2.423 ){
+        //         // else if(5.858 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 10.705  && 0 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < 2.423 ){
         //         //     LaneLogicPoseX = 15.755;
         //         //     LaneLogicPoseY = 4.237;
         //         //     LaneLogicPoseRotation = 0;
@@ -493,13 +493,13 @@ if(UpdatingTarget ==  false){
 
         //         //  }
         //          //Quadrant 13
-        //         if(10.705 < SwerveBase.currentPoseX && SwerveBase.currentPoseX < 15.50  && 0 < SwerveBase.currentPoseY  && SwerveBase.currentPoseY < .5682 *(SwerveBase.currentPoseX - 15.618) + 5.046 ){
+        //         if(10.705 < SwerveBasePose.currentPoseX && SwerveBasePose.currentPoseX < 15.50  && 0 < SwerveBasePose.currentPoseY  && SwerveBasePose.currentPoseY < .5682 *(SwerveBasePose.currentPoseX - 15.618) + 5.046 ){
         //             LaneLogicPoseX = 9.50;
         //             LaneLogicPoseY = 1.75;
         //             LaneLogicPoseRotation =  180;
         //             System.out.println("Quadrant 13");
         //         }
-        //         // if(SwerveBase.currentPoseX > 0 && SwerveBase.currentPoseY > 0){
+        //         // if(SwerveBasePose.currentPoseX > 0 && SwerveBasePose.currentPoseY > 0){
         //         }
              
            
@@ -515,45 +515,45 @@ public static int getQuardernt() {
  double Bottom_Field = 0.0; //Y Horizontal Line
 
 
- double Line_1 = -0.0565 * SwerveBase.currentPoseX + 5.527;
- double Line_2 = 0.0618 * SwerveBase.currentPoseX + 2.017;
+ double Line_1 = -0.0565 * SwerveBasePose.currentPoseX + 5.527;
+ double Line_2 = 0.0618 * SwerveBasePose.currentPoseX + 2.017;
  double Line_3 = 2.42133725; //Y Horizontal Line
  double Line_4 = 10.927; //X Verical Line
- double Line_5 = -0.404 * SwerveBase.currentPoseX + 6.87653752;
+ double Line_5 = -0.404 * SwerveBasePose.currentPoseX + 6.87653752;
  double Line_6 = 2.425; // X Vertical Line
- double Line_7 = -0.06 * SwerveBase.currentPoseX + 6.123; // Y Intercept 
- double Line_8 = .552 * SwerveBase.currentPoseX + 3.616;
+ double Line_7 = -0.06 * SwerveBasePose.currentPoseX + 6.123; // Y Intercept 
+ double Line_8 = .552 * SwerveBasePose.currentPoseX + 3.616;
  double Line_9 = 14.544; // X Vertical Line
  double Line_10 = 5.799; // X Vertical Line
- double Line_11 = -.578 * SwerveBase.currentPoseX + 12.168; 
+ double Line_11 = -.578 * SwerveBasePose.currentPoseX + 12.168; 
 
 
- if( Line_4 < SwerveBase.currentPoseX  && /*SwerveBase.currentPoseX < Right_Field &&*/
-    Bottom_Field < SwerveBase.currentPoseY && SwerveBase.currentPoseY < Line_5){
+ if( Line_4 < SwerveBasePose.currentPoseX  && /*SwerveBasePose.currentPoseX < Right_Field &&*/
+    Bottom_Field < SwerveBasePose.currentPoseY && SwerveBasePose.currentPoseY < Line_5){
     return 3;
  }
 
-  if( Left_Field < SwerveBase.currentPoseX  &&
-     Line_2 < SwerveBase.currentPoseY &&  SwerveBase.currentPoseY < Line_1){
+  if( Left_Field < SwerveBasePose.currentPoseX  &&
+     Line_2 < SwerveBasePose.currentPoseY &&  SwerveBasePose.currentPoseY < Line_1){
     return 1;
  }
 
- if( Left_Field < SwerveBase.currentPoseX  && SwerveBase.currentPoseX < Line_4 &&
-    Bottom_Field < SwerveBase.currentPoseY && (SwerveBase.currentPoseY < Line_1 & SwerveBase.currentPoseY < Line_3)&& SwerveBase.currentPoseY < Line_2){
+ if( Left_Field < SwerveBasePose.currentPoseX  && SwerveBasePose.currentPoseX < Line_4 &&
+    Bottom_Field < SwerveBasePose.currentPoseY && (SwerveBasePose.currentPoseY < Line_1 & SwerveBasePose.currentPoseY < Line_3)&& SwerveBasePose.currentPoseY < Line_2){
     return 2;
  }
-if( Left_Field < SwerveBase.currentPoseX  && SwerveBase.currentPoseX < Line_6 &&
-    Line_7 < SwerveBase.currentPoseY && SwerveBase.currentPoseY < Top_Field ){
+if( Left_Field < SwerveBasePose.currentPoseX  && SwerveBasePose.currentPoseX < Line_6 &&
+    Line_7 < SwerveBasePose.currentPoseY && SwerveBasePose.currentPoseY < Top_Field ){
     return 4;
  }
 
-if ( Line_6 < SwerveBase.currentPoseX  && SwerveBase.currentPoseX < Line_9 &&
-    ((Line_10 < SwerveBase.currentPoseY && Line_7 < SwerveBase.currentPoseY) & (Line_11 < SwerveBase.currentPoseY && Line_8 < SwerveBase.currentPoseY)) && SwerveBase.currentPoseY < Top_Field){
+if ( Line_6 < SwerveBasePose.currentPoseX  && SwerveBasePose.currentPoseX < Line_9 &&
+    ((Line_10 < SwerveBasePose.currentPoseY && Line_7 < SwerveBasePose.currentPoseY) & (Line_11 < SwerveBasePose.currentPoseY && Line_8 < SwerveBasePose.currentPoseY)) && SwerveBasePose.currentPoseY < Top_Field){
     return 5;
  } 
 
- if ( Line_9 < SwerveBase.currentPoseX  && SwerveBase.currentPoseX < Right_Field && 
-    Line_8 < SwerveBase.currentPoseY && SwerveBase.currentPoseY < Top_Field ){
+ if ( Line_9 < SwerveBasePose.currentPoseX  && SwerveBasePose.currentPoseX < Right_Field && 
+    Line_8 < SwerveBasePose.currentPoseY && SwerveBasePose.currentPoseY < Top_Field ){
     return 6;
 }
 else{
@@ -568,16 +568,16 @@ else{
 public static void LaneLogic(boolean In, String Location) {
 
    // equation for a circel
-    //Math.sqrt(r*r - (SwerveBase.currentPoseX-x)*(SwerveBase.currentPoseX-x))+y;
+    //Math.sqrt(r*r - (SwerveBasePose.currentPoseX-x)*(SwerveBasePose.currentPoseX-x))+y;
   
 
 
 
-    double Equation_1 = 0.0565 *SwerveBase.currentPoseX + 5.527;
+    double Equation_1 = 0.0565 *SwerveBasePose.currentPoseX + 5.527;
     double Equation_1_Min = 0.0;
     double Equation_1_Max = 4.673;
 
-    double Equation_2 =  Math.sqrt(2.361 * 2.361 - (SwerveBase.currentPoseX-5.956)*(SwerveBase.currentPoseX-5.956))+3.764;
+    double Equation_2 =  Math.sqrt(2.361 * 2.361 - (SwerveBasePose.currentPoseX-5.956)*(SwerveBasePose.currentPoseX-5.956))+3.764;
     double Equation_2_Min = 4.673;
     double Equation_2_Max = 5.847;
 
@@ -590,7 +590,7 @@ public static void LaneLogic(boolean In, String Location) {
     double Equation_4_Min = 13.777;
     double Equation_4_Max =  14.539 + LeadAmount;
 
-    double Equation_5 = Math.sqrt(2.361 * 2.361 - (SwerveBase.currentPoseX-5.956)*(SwerveBase.currentPoseX-5.956))+3.764;; //Y Horizontal Line
+    double Equation_5 = Math.sqrt(2.361 * 2.361 - (SwerveBasePose.currentPoseX-5.956)*(SwerveBasePose.currentPoseX-5.956))+3.764;; //Y Horizontal Line
     double Equation_5_Min = 13.777;
     double Equation_5_Max =  13.777;
 ;
@@ -600,7 +600,7 @@ public static void LaneLogic(boolean In, String Location) {
 
 
     if (In == true){
-         double HeadingX = SwerveBase.currentPoseX - LeadAmount;
+         double HeadingX = SwerveBasePose.currentPoseX - LeadAmount;
         if(Location == "Speacker"){
             /*Bottom Lane*/
             if(getQuardernt() == 1 ){
@@ -654,7 +654,7 @@ public static void LaneLogic(boolean In, String Location) {
 
 
         if (In == false){
-             double HeadingX = SwerveBase.currentPoseX + LeadAmount;
+             double HeadingX = SwerveBasePose.currentPoseX + LeadAmount;
             
 
             
@@ -689,10 +689,48 @@ public static void LaneLogic(boolean In, String Location) {
 
    @Override
   public void periodic() {
+    //Runs DogLog to log values to USB
+    DogLog();
 
     // System.out.println("Slew" + MaxTranslationAcceleration.calculate(XSpeed)); 
     //System.out.println("Quadrent is "+ getQuardernt()); 
+    }
 
+    private void DogLog(){
+        // //Main Values
+        // DogLog.log("/SelfDriving/Quardent", getQuardernt());
+        // DogLog.log("/SelfDriving/CloseEnough", CloseEnough);
 
-            }
+        // //Published Pose Values
+        // DogLog.log("/SelfDriving/Position/TargetX", TargetPoseX);
+        // DogLog.log("/SelfDriving/Position/TargetY", TargetPoseY);
+        // DogLog.log("/SelfDriving/Position/TargetRotation", TargetPoseRotation);
+
+        // //Lane Logic Values
+        // DogLog.log("/SelfDriving/LaneLogicValue/Heading", LaneLogicPoseX);
+        // DogLog.log("/SelfDriving/LaneLogicValue/Odometry", LaneLogicPoseY);
+        // DogLog.log("/SelfDriving/LaneLogicValue/Odometry", LaneLogicPoseRotation);
+        // DogLog.log("/SelfDriving/LaneLogicValue/Odometry", LaneLogicFinalDestination);
+        // DogLog.log("/SelfDriving/LaneLogicValue/Odometry", UpdatingTarget);
+
+        // //Pose Difference vlaues
+        // DogLog.log("/SelfDriving/Difference/DifferenceX", PoseDifferenceX );
+        // DogLog.log("/SelfDriving/Difference/DifferenceY", PoseDifferenceY);
+        // DogLog.log("/SelfDriving/Difference/DifferenceY", PoseDifferenceRotation);
+
+        // //Speeds in each derection if note ditection XSpeed is forward
+        // DogLog.log("/SelfDriving/Speeds/XSpeed", XSpeedFinal);
+        // DogLog.log("/SelfDriving/Speeds/YSpeed", YSpeedFinal);
+        // DogLog.log("/SelfDriving/Speeds/RotationSpeed", RotationSpeedFinal);
+
+        // // Value for auto setup
+        // // DogLog.log("/SelfDriving/AutoSetUp/MoveLeft", AutoSetUpMoveLeft);
+        // // DogLog.log("/SelfDriving/AutoSetUp/MoveRight", AutoSetUpMoveRight);
+        // // DogLog.log("/SelfDriving/AutoSetUp/MoveForward", AutoSetUpMoveForward);
+        // // DogLog.log("/SelfDriving/AutoSetUp/MoveBackward", AutoSetUpMoveBackward);
+        // // DogLog.log("/SelfDriving/AutoSetUp/RotateCouterCloskWise", AutoSetUpRotateCounterClockWise);
+        // // DogLog.log("/SelfDriving/AutoSetUp/RotateCloskWise", AutoSetUpRotateCloskWise);
+        // // DogLog.log("/SelfDriving/AutoSetUp/CloseEnought", AutoSetUpCloseEnough);
+
+    }
 }

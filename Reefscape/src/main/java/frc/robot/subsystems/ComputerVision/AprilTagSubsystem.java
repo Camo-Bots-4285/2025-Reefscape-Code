@@ -50,10 +50,10 @@ public class AprilTagSubsystem extends SubsystemBase {
   private static boolean doRejectUpdate = false;
  
   //This is to import alll Photon apriltag camera just add the name in CameraName and duplicate code to make funtina;
-  PhotonRunnable photonEstimator1 = new PhotonRunnable("Camera1", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_1);
-  PhotonRunnable photonEstimator2 = new PhotonRunnable("Camera2", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_2);
-  PhotonRunnable photonEstimator3 = new PhotonRunnable("Camera3", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_3);
-  PhotonRunnable photonEstimator4 = new PhotonRunnable("Camera4", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_4);
+  PhotonRunnable photonEstimator1 = new PhotonRunnable("Camera 1", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_1);
+  PhotonRunnable photonEstimator2 = new PhotonRunnable("Camera 2", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_2);
+  PhotonRunnable photonEstimator3 = new PhotonRunnable("Camera 3", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_3);
+  PhotonRunnable photonEstimator4 = new PhotonRunnable("Camera 4", VisionConstants.APRILTAG_CAMERA_TO_ROBOT_4);
 
 
   EstimatedRobotPose visionPose1;
@@ -119,8 +119,8 @@ public class AprilTagSubsystem extends SubsystemBase {
       // The alliance changed, which changes the coordinate system.
       // Since a tag was seen, and the tags are all relative to the coordinate system, the estimated pose
       // needs to be transformed to the new coordinate system.
-      var newPose = flipAlliance(Robot.m_robotContainer.m_swerveBase.getOdometry().getEstimatedPosition());
-      Robot.m_robotContainer.m_swerveBase.getOdometry().resetPosition(Robot.m_robotContainer.m_swerveBase.getOdometry().getEstimatedPosition().getRotation(), Robot.m_robotContainer.m_swerveBase.getModulePositions(), newPose);
+      var newPose = flipAlliance(Robot.m_robotContainer.m_swerveBasePose.getOdometry().getEstimatedPosition());
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().resetPosition(Robot.m_robotContainer.m_swerveBasePose.getOdometry().getEstimatedPosition().getRotation(), Robot.m_robotContainer.m_swerveBasePose.getModulePositions(), newPose);
     }
   }
       //Was add to help better limelight it work but if limelight disconects code does not work need to test and find a solution
@@ -129,7 +129,7 @@ public class AprilTagSubsystem extends SubsystemBase {
         //   LimelightHelpers.SetFiducialIDFiltersOverride("limelight-tags", validIDs);
 
     
-      // LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBase.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/SwerveBase.pigeonSensor.getYaw(), 0.0, 0, 0, 0, 0);
+      // LimelightHelpers.SetRobotOrientation("limelight-tags", /*Robot.m_robotContainer.m_swerveBasePose.getOdometry().getEstimatedPosition().getRotation().getDegrees()*/SwerveBase.pigeonSensor.getYaw(), 0.0, 0, 0, 0, 0);
       // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
       // if(Math.abs(SwerveBase.pigeonSensor.getRate()) > 720 ) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       // {
@@ -145,8 +145,8 @@ public class AprilTagSubsystem extends SubsystemBase {
       
       // if(doRejectUpdate == false)
       // {
-      //  //Robot.m_robotContainer.m_swerveBase.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      //  Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(
+      //  //Robot.m_robotContainer.m_swerveBasePose.getOdometry().setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      //  Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(
       //       mt2.pose,
       //       mt2.timestampSeconds);
        //System.out.println("Calculating");
@@ -182,7 +182,7 @@ public class AprilTagSubsystem extends SubsystemBase {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d1 = flipAlliance(pose2d1);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d1, visionPose1.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d1, visionPose1.timestampSeconds);
     }
     if (visionPose2 != null) {
       // New pose from vision
@@ -191,7 +191,7 @@ public class AprilTagSubsystem extends SubsystemBase {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d2 = flipAlliance(pose2d2);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d2, visionPose2.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d2, visionPose2.timestampSeconds);
     }
     if (visionPose3 != null) {
       // New pose from vision
@@ -200,7 +200,7 @@ public class AprilTagSubsystem extends SubsystemBase {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d3 = flipAlliance(pose2d3);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d3, visionPose3.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d3, visionPose3.timestampSeconds);
     }
     if (visionPose4 != null) {
       // New pose from vision
@@ -209,23 +209,23 @@ public class AprilTagSubsystem extends SubsystemBase {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d4 = flipAlliance(pose2d4);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d4, visionPose4.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d4, visionPose4.timestampSeconds);
     }
 
-     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
-    if(limelightMeasurement.tagCount > 0){
-          Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-        }
+    //  LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
+    // if(limelightMeasurement.tagCount > 0){
+    //       Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+    //     }
     
     
     // LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
     // if(limelightMeasurement.tagCount >= 1){
-    //       Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+    //       Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
     //     }
 
     // This method will be called once per scheduler run
-    // System.out.println("Pose: " + Robot.m_robotContainer.m_swerveBase.getPose3d());
-    publisher.set(Robot.m_robotContainer.m_swerveBase.getPose3d());
+    // System.out.println("Pose: " + Robot.m_robotContainerm_swerveBasePosegetPose3d());
+    publisher.set(Robot.m_robotContainer.m_swerveBasePose.getPose3d());
   //System.out.println("Old" + limelightMeasurement.pose);
   
 }
@@ -266,7 +266,7 @@ public void updatedPoseFromTagAuto() {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d1 = flipAlliance(pose2d1);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d1, visionPose1.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d1, visionPose1.timestampSeconds);
     }
     }
 
@@ -278,7 +278,7 @@ public void updatedPoseFromTagAuto() {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d2 = flipAlliance(pose2d2);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d2, visionPose2.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d2, visionPose2.timestampSeconds);
     }
   }
 
@@ -290,7 +290,7 @@ public void updatedPoseFromTagAuto() {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d3 = flipAlliance(pose2d3);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d3, visionPose3.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d3, visionPose3.timestampSeconds);
     }
   }
 
@@ -302,7 +302,7 @@ public void updatedPoseFromTagAuto() {
       if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
         pose2d4 = flipAlliance(pose2d4);
       }
-      Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d4, visionPose4.timestampSeconds);
+      Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d4, visionPose4.timestampSeconds);
        
     }
   }
@@ -311,7 +311,7 @@ public void updatedPoseFromTagAuto() {
   if (RobotContainer.Camera5_InAuto == true ) {
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-tags");
     if(limelightMeasurement.tagCount >= 1){
-          Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+          Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
         }
       }
     // if (visionPose5 != null) {
@@ -321,11 +321,11 @@ public void updatedPoseFromTagAuto() {
     //   if (originPosition != OriginPosition.kBlueAllianceWallRightSide) {
     //     pose2d5 = flipAlliance(pose2d5);
     //   }
-    //   Robot.m_robotContainer.m_swerveBase.getOdometry().addVisionMeasurement(pose2d5, visionPose5.timestampSeconds);
+    //   Robot.m_robotContainer.m_swerveBasePose.getOdometry().addVisionMeasurement(pose2d5, visionPose5.timestampSeconds);
     // }
     // This method will be called once per scheduler run
-    // System.out.println("Pose: " + Robot.m_robotContainer.m_swerveBase.getPose3d());
-    publisher.set(Robot.m_robotContainer.m_swerveBase.getPose3d());
+    // System.out.println("Pose: " + Robot.m_robotContainerm_swerveBasePosegetPose3d());
+    publisher.set(Robot.m_robotContainer.m_swerveBasePose.getPose3d());
     }
 
 

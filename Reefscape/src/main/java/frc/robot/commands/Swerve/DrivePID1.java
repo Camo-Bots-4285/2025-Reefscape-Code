@@ -5,6 +5,8 @@
 package frc.robot.commands.Swerve;
 
 
+import frc.robot.Robot;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
 import frc.robot.subsystems.Drive.SelfDriving;
 import frc.robot.subsystems.Drive.SwerveBase;
@@ -20,7 +22,8 @@ public class DrivePID1 extends Command {
   private SelfDriving m_self_Driving;
  
   private final SwerveBase drive;
-  
+  public double timer;
+   public double offset;
   
 
 
@@ -35,15 +38,31 @@ drive = swerveBase;
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    SwerveBase.AllowMainDriving = false;
+    offset = Robot.teleopTime;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
- 
-drive.drive(2.0, 0.0, 0.0, false);
-//drive.drive(SelfDriving.XSpeed, SelfDriving.YSpeed, 0.0, true);
-SwerveBase.AllowMainDriving = false;
+       timer = Robot.teleopTime;
+       //Test speed
+    drive.drive(0.15, 0.0, 0.0, false);
+
+    //Test accleration
+  // double speed;
+  // double accleration = 12.5;
+  // double localTime = timer -  offset;
+  // if (localTime < 3){
+  //  speed= localTime * accleration/(2*Math.PI*SwerveConstants.robotRotationFactor);
+  // }else{
+  //   speed = -3*2*accleration/(2*Math.PI*SwerveConstants.robotRotationFactor)+localTime * accleration/(2*Math.PI*SwerveConstants.robotRotationFactor);
+  // }
+
+  //  drive.drive(0.0, 0.0, speed, true);
+
+
 
   }
   // Called once the command ends or is interrupted.

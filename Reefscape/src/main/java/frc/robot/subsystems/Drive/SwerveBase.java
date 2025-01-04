@@ -29,6 +29,7 @@ import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import frc.robot.Constants.*;
 
 import java.sql.Driver;
 
@@ -43,6 +44,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants;
+//import dev.doglog.DogLog;
 
 
 
@@ -53,17 +55,13 @@ public class SwerveBase extends SubsystemBase {
   public static boolean  isFieldRelative1 = true;
 
   public static boolean AllowMainDriving = true;
-  public static boolean GettingNote = false;
-public static double translation;
-public static double rotation;
-public static boolean needMoreAmps;
-public static int SwerveAmps;
+  public static double translation;
+  public static double rotation;
+  public static boolean needMoreAmps;
+  public static int SwerveAmps;
+  public static boolean GettingNote;
 
-public static double currentPoseX;
-public static double currentPoseY;
-public static double currentPoseRotation;
-
-public static double SwerveTuneingkP;
+  public static double SwerveTuneingkP;
 
 //Checks if setNeedMoreAmps is True of false and change need more
 //amps based on if the command is being called
@@ -86,9 +84,6 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
     zeroPigeon();
 
     pigeonSensor.getAllConfigs(pigeonConfig);
-
-
-    odometry.resetPosition(new Rotation2d(), getModulePositions(), new Pose2d());
 
     // initialize the rotation offsets for the CANCoders
     frontLeft.initRotationOffset();
@@ -116,45 +111,47 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
     frontRight.getRotationMotor().setInverted(false);
     frontLeft.getRotationMotor().setInverted(false);
 
-    double driveBaseRadius = Constants.SwerveConstants.mDriveRadius.getNorm();
+  }
+  
+  /*
+   * The following is the Method that are used to interact with the pigeon
+   */
 
-    AutoBuilder.configureHolonomic(
-            this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(2.525, 0.0, 0.0),//Translational   2.525
-                    new PIDConstants(3.15, 0.0, 0.0),//Rotational  3.173
-                    6.03504, //5.7912  module speed, in m/s
-                    driveBaseRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig(false, true, 20 , 20) // 0.5,0.25 0.6 to high 0.4 too low 0.5 nice Default path replanning config. See the API for the options here   
-            ),
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              Boolean alliance = Constants.isRed;
-              if (alliance) {
-                return alliance == Constants.isRed;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
+  // Return Pigeon sensor
+   public WPI_Pigeon2 getPigeonSensor() {
+    return pigeonSensor;
   }
 
+  public Rotation2d getGyroscopeRotation() {
+    return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
+  }
+
+     private boolean needPigeonReset = false;
+   //Is used to help zero pigeon when method is called
+  public void setNeedPigeonReset(boolean set) {
+    needPigeonReset = set;
+  }
+
+  //Zeros Pigeon sencor
   public void zeroPigeon() {
     pigeonSensor.reset();
   }
 
-
-
+  //to be used for Driving the robot the heading whille be temparrly set to zero when driving in robot centric
+  public Rotation2d getHeadingDrive() {
+     if(isFieldRelative1 == true){
+    return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
+    }
+    if(RobotState.isAutonomous()){
+      return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
+    }
+    else{
+      return Rotation2d.fromDegrees(SwerveConstants.NormalPigeonOfSet);
+    }
+  }
 
   /**
-   * Subsystem that controls the drivetrain of the robot
-   * Handles all the odometry and base movement for the chassis
+   * The following variable will be sent to the constructor in Swerve module to intilize the swerve module
    */
 
   /**
@@ -167,9 +164,6 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
   private static final double rearLeftAngleOffset = Units.degreesToRadians(158.47);//202.85
   private static final double rearRightAngleOffset = Units.degreesToRadians(275.36);//132.45
 
-  public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
-  private final double SCALE_X = -1/0.9;
-  private final double SCALE_Y = -1/0.9;
 
   /**
    * SwerveModule objects
@@ -183,116 +177,64 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
    */
 
   public final SwerveModule frontLeft = new SwerveModule(
+      2,
       SwerveConstants.frontLeftDriveMotorId,
-      SwerveConstants.frontLeft_Drive_kP,
+      SwerveConstants.frontLeft_Drive_PID,
+      SwerveConstants.frontLeft_Drive_FF,
+
       SwerveConstants.frontLeftRotationMotorId,
-      SwerveConstants.frontLeft_Rotation_kP,
+      SwerveConstants.frontLeft_Rotation_PID,
+      SwerveConstants.frontLeft_Rotation_FF,
+
       SwerveConstants.frontLeftRotationEncoderId,
       frontLeftAngleOffset,
       this);
 
   public final SwerveModule frontRight = new SwerveModule(
+       1,
       SwerveConstants.frontRightDriveMotorId,
-      SwerveConstants.frontRight_Drive_kP,
+      SwerveConstants.frontRight_Drive_PID,
+      SwerveConstants.frontRight_Drive_FF,
+
       SwerveConstants.frontRightRotationMotorId,
-      SwerveConstants.frontRight_Rotation_kP,
+      SwerveConstants.frontRight_Rotation_PID,
+      SwerveConstants.frontRight_Rotation_FF,
+
       SwerveConstants.frontRightRotationEncoderId,
       frontRightAngleOffset,
       this);
 
   public final SwerveModule rearLeft = new SwerveModule(
+      3,
       SwerveConstants.rearLeftDriveMotorId,
-      SwerveConstants.rearLeft_Drive_kP,
+      SwerveConstants.rearLeft_Drive_PID,
+      SwerveConstants.rearLeft_Drive_FF,
+
       SwerveConstants.rearLeftRotationMotorId,
-      SwerveConstants.rearLeft_Rotation_kP,
+      SwerveConstants.rearLeft_Rotation_PID,
+      SwerveConstants.rearLeft_Rotation_FF,
+
       SwerveConstants.rearLeftRotationEncoderId,
       rearLeftAngleOffset,
       this);
 
   public final SwerveModule rearRight = new SwerveModule(
+      4,
       SwerveConstants.rearRightDriveMotorId,
-      SwerveConstants.rearRight_Drive_kP,
+      SwerveConstants.rearRight_Drive_PID,
+      SwerveConstants.rearRight_Drive_FF,
+
       SwerveConstants.rearRightRotationMotorId,
-      SwerveConstants.rearRight_Rotation_kP,
+      SwerveConstants.rearRight_Rotation_PID,
+      SwerveConstants.rearRight_Rotation_FF,
+
       SwerveConstants.rearRightRotationEncoderId,
       rearRightAngleOffset,
       this);
 
 
-  /**
-   * odometry for the robot, measured in meters for linear motion and radians for
-   * rotational motion
-   * Takes in kinematics and robot angle for parameters
-   */
-
-  private final SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(SwerveConstants.kinematics, new Rotation2d(),
-      getModulePositions(), new Pose2d());
-  private boolean needPigeonReset = false;
 
  
-  public SwerveDrivePoseEstimator getOdometry() {
-    return odometry;
-  }
-
-  public Pose3d getPose3d(){
-    return new Pose3d(getOdometry().getEstimatedPosition());
-  }
-  
-   //Is used to help zero pigeon when method is called
-  public void setNeedPigeonReset(boolean set) {
-    needPigeonReset = set;
-  }
-
-  @Override
-  public void periodic() {
-
-    SmartDashboard.putNumber("CanCoderRR", rearRight.getCanCoderAngle().getRotations());
-    SmartDashboard.putNumber("CanCoderRL", rearLeft.getCanCoderAngle().getRotations());
-    SmartDashboard.putNumber("CanCoderFR", frontRight.getCanCoderAngle().getRotations());
-    SmartDashboard.putNumber("CanCoderFL", frontLeft.getCanCoderAngle().getRotations());
-    SmartDashboard.putNumber("RotationMotorRR", rearRight.getIntegratedAngle().getRotations());
-    SmartDashboard.putNumber("RotationMotorRL", rearLeft.getIntegratedAngle().getRotations());
-    SmartDashboard.putNumber("RotationMotorFR", frontRight.getIntegratedAngle().getRotations());
-    SmartDashboard.putNumber("RotationMotorFL", frontLeft.getIntegratedAngle().getRotations());
-
-    currentPoseX = getPose().getX();
-    currentPoseY = getPose().getY();
-    currentPoseRotation = getPose().getRotation().getDegrees() + 180;
-    //System.out.println(currentPoseX);
-    //System.out.println(currentPoseY);
-    SmartDashboard.putNumber("RobotPoseX", currentPoseX);
-    SmartDashboard.putNumber("RobotPoseY", currentPoseY);
-
-    // update the odometry every 20ms
-    odometry.update(getHeading(), getModulePositions());
-
-    SmartDashboard.putString("Robot pose",
-        getPose().toString());
-    SmartDashboard.putNumber("Bot Heading",
-        getHeading().getDegrees());
-    SmartDashboard.putString("Pigeon Rotation",
-    pigeonSensor.getRotation2d().toString());
-    SmartDashboard.putNumber("Pigeon Yaw",
-    pigeonSensor.getYaw());
-    SmartDashboard.putNumber("Pigeon Compass",
-    pigeonSensor.getCompassHeading());
-
-    SmartDashboard.putString("FL Wheel Angle", frontLeft.getCanCoderAngle().toString());
-    SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
-    SmartDashboard.putString("RL Wheel Angle", rearLeft.getCanCoderAngle().toString());
-    SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
-
-    SmartDashboard.putNumber("FL Wheel Speed",  frontLeft.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
-    SmartDashboard.putNumber("FR Wheel Speed", frontRight.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
-    SmartDashboard.putNumber("RL Wheel Speed", rearLeft.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
-    SmartDashboard.putNumber("RR Wheel Speed", rearRight.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
-
-    SmartDashboard.putNumber("FL Wheel Speed2", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
-    SmartDashboard.putNumber("FR Wheel Speed2", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
-    SmartDashboard.putNumber("RL Wheel Speed2", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
-    SmartDashboard.putNumber("RR Wheel Speed2", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
-   
- }
   
 
   /**
@@ -341,40 +283,131 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
     SwerveModuleState[] states = SwerveConstants.kinematics.toSwerveModuleStates(speeds);
 
     setModuleStates(states);
+ 
+  }
+    // Set the wheels into an X formation to prevent movement
+    //NOTE - has not been tested
+    public void setX() {
+      frontLeft.setDesiredStateClosedLoop(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+      frontRight.setDesiredStateClosedLoop(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+      rearLeft.setDesiredStateClosedLoop(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+      rearRight.setDesiredStateClosedLoop(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    }
+  
+    // reset the measured distance driven for each module
+    public void resetDriveDistances() {
+      frontLeft.resetDistance();
+      frontRight.resetDistance();
+      rearLeft.resetDistance();
+      rearRight.resetDistance();
+    }
 
+
+
+    //Was used to make robot face the speaker in 2024 good example
+  // public Rotation2d getAngleToSpeaker(){
+  //   Translation2d robotPose = getPose().getTranslation();
+  //  // Translation2d diffPose = RobotContainer.m_ArmPivotSubsystem.getSpeakerPose().getTranslation().minus(robotPose);
+  //  // return new Rotation2d(Math.atan2(diffPose.getY(), diffPose.getX()));
+  // }
+
+
+  public void stopModules() {
+    frontLeft.stop();
+    frontRight.stop();
+    rearRight.stop();
+    rearLeft.stop();
   }
 
-  public Pose2d getScaledPose() {
-    m_pose = getPose();
-    final var translation = new Translation2d(m_pose.getX() * SCALE_X, m_pose.getY() * SCALE_Y);
-    final var rotation = m_pose.getRotation().rotateBy(new Rotation2d(0));
-    return new Pose2d(translation.getX(), translation.getY(), rotation);
-  }
+/**
+ * The following is the periodic loop that record necisary varibales
+ */
+ @Override
+  public void periodic() {
+    //Runs DogLog to log values to USB
+    DogLog();
 
-  public Rotation2d getGyroscopeRotation() {
+    SmartDashboard.putNumber("CanCoderRR", rearRight.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderRL", rearLeft.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderFR", frontRight.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("CanCoderFL", frontLeft.getCanCoderAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorRR", rearRight.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorRL", rearLeft.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorFR", frontRight.getIntegratedAngle().getRotations());
+    SmartDashboard.putNumber("RotationMotorFL", frontLeft.getIntegratedAngle().getRotations());
 
-    return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
+    SmartDashboard.putString("Pigeon Rotation",
+    pigeonSensor.getRotation2d().toString());
+    SmartDashboard.putNumber("Pigeon Yaw",
+    pigeonSensor.getYaw());
+    SmartDashboard.putNumber("Pigeon Compass",
+    pigeonSensor.getCompassHeading());
+
+    SmartDashboard.putString("FL Wheel Angle", frontLeft.getCanCoderAngle().toString());
+    SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
+    SmartDashboard.putString("RL Wheel Angle", rearLeft.getCanCoderAngle().toString());
+    SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
+
+    SmartDashboard.putNumber("FL Wheel Speed",  frontLeft.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
+    SmartDashboard.putNumber("FR Wheel Speed", frontRight.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
+    SmartDashboard.putNumber("RL Wheel Speed", rearLeft.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
+    SmartDashboard.putNumber("RR Wheel Speed", rearRight.getCurrentVelocityRadiansPerSecond()/(2*Math.PI)*SwerveConstants.wheelCircumference);
+
+    SmartDashboard.putNumber("FL Wheel Speed2", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
+    SmartDashboard.putNumber("FR Wheel Speed2", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
+    SmartDashboard.putNumber("RL Wheel Speed2", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
+    SmartDashboard.putNumber("RR Wheel Speed2", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
     
+
+ }
+
+ private void DogLog(){
+    // //Pigeon Data
+    // DogLog.log("/SwerveBase/Pigeon/Rotation2D", pigeonSensor.getRotation2d().toString());
+    // DogLog.log("/SwerveBase/Pigeon/Yaw", pigeonSensor.getYaw());
+    // DogLog.log("/SwerveBase/Pigeon/Pitch",pigeonSensor.getPitch());
+    // DogLog.log("/SwerveBase/Pigeon/Roll", pigeonSensor.getRoll());
+    // DogLog.log("/SwerveBase/Pigeon/Rate", pigeonSensor.getRate());
+    // DogLog.log("/SwerveBase/Pigeon/Compass", pigeonSensor.getCompassHeading());
+    // DogLog.log("/SwerveBase/Pigeon/Compass", getHeadingDrive());
+
+    // //CanCoder Angle
+    // DogLog.log("/SwerveBase/FL/CanCoderAngle", frontLeft.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/FR/CanCoderAngle", frontRight.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/RL/CanCoderAngle", rearLeft.getCanCoderAngle());
+    // DogLog.log("/SwerveBase/RR/CanCoderAngle", rearRight.getCanCoderAngle());
+
+    // //Vaule of wheels that are being ready
+    // DogLog.log("/SwerveBase/FL/Wheel_Angle", frontLeft.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/FR/Wheel_Angle", frontRight.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/RL/Wheel_Angle", rearLeft.getIntegratedAngle());
+    // DogLog.log("/SwerveBase/RR/Wheel_Angle", rearRight.getIntegratedAngle());
+
+    // //Value of wheel speeds
+    // DogLog.log("/SwerveBase/FL/Wheel_Speed", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/FR/Wheel_Speed", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/RL/Wheel_Speed", Math.round(rearLeft.getCurrentVelocityMetersPerSecond()));
+    // DogLog.log("/SwerveBase/RR/Wheel_Speed", Math.round(rearRight.getCurrentVelocityMetersPerSecond()));
+
+    // //Logs same value as above but might be messy need to see
+    // DogLog.log("/SwerveBase/ModuleStates/ModuleStates",getModuleStates());
+
+    // //Values that help run diferent types of code
+    // DogLog.log("/SwerveBase/Values/isFeildRelative1",isFieldRelative1);
+    // DogLog.log("/SwerveBase/Values/AllowMainDriving",AllowMainDriving);
+
+ } 
+
+
+/**
+ * This code does all the calculation for the swerve drive
+ */
+
+
+  public SwerveDriveKinematics getKinematics() {
+    return SwerveConstants.kinematics;
   }
 
-  public void robotRelativeDrive(ChassisSpeeds speeds){
-    setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
-  }
-
-  /**
-   * Method to set the desired state for each swerve module
-   * Uses PID and feedforward control to control the linear and rotational values
-   * for the modules
-   */
-  public void setModuleStates(SwerveModuleState[] moduleStates) {
-    // make sure the wheels don't try to spin faster than the maximum speed possible
-    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, SwerveConstants.maxSpeed);
-    frontLeft.setDesiredStateClosedLoop(moduleStates[0]);
-    frontRight.setDesiredStateClosedLoop(moduleStates[1]);
-    rearLeft.setDesiredStateClosedLoop(moduleStates[2]);
-    rearRight.setDesiredStateClosedLoop(moduleStates[3]);
-
-  }
 
 
   // returns an array of SwerveModuleState
@@ -406,119 +439,29 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
 
   }
 
+
+  /**
+   * Method to set the desired state for each swerve module
+   * Uses PID and feedforward control to control the linear and rotational values
+   * for the modules
+   */
+  public void setModuleStates(SwerveModuleState[] moduleStates) {
+    // make sure the wheels don't try to spin faster than the maximum speed possible
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, SwerveConstants.maxSpeed);
+    frontLeft.setDesiredStateClosedLoop(moduleStates[0]);
+    frontRight.setDesiredStateClosedLoop(moduleStates[1]);
+    rearLeft.setDesiredStateClosedLoop(moduleStates[2]);
+    rearRight.setDesiredStateClosedLoop(moduleStates[3]);
+
+  }
+
   public ChassisSpeeds getRobotRelativeChassisSpeeds(){
     return Constants.SwerveConstants.kinematics.toChassisSpeeds(getModuleStates());
   }
 
-  /**
-   * Return the current position of the robot on field
-   * Based on drive encoder and gyro reading
-   */
-  public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
+  public void robotRelativeDrive(ChassisSpeeds speeds){
+    setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
   }
-
-  // reset the current pose to a desired pose
-  public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(getHeading(), getModulePositions(), pose);
-  }
-
-  // reset the measured distance driven for each module
-  public void resetDriveDistances() {
-    frontLeft.resetDistance();
-    frontRight.resetDistance();
-    rearLeft.resetDistance();
-    rearRight.resetDistance();
-  }
-
-  // get the current heading of the robot based on the gyro
-  public Rotation2d getHeading() {
-
-    return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
-
-  }
-  //this is a duplicate of getHeading but is use to make the robot drive in robot centic
-  //while evrything else like camera and odomatery tracking till use the normal pigeon heading
-  public Rotation2d getHeadingDrive() {
-     if(isFieldRelative1 == true){
-    return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
-    }
-    if(RobotState.isAutonomous()){
-      return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
-    }
-    else{
-      return Rotation2d.fromDegrees(SwerveConstants.NormalPigeonOfSet);
-    }
-  }
-
-  // public Rotation2d getAngleToSpeaker(){
-  //   Translation2d robotPose = getPose().getTranslation();
-  //  // Translation2d diffPose = RobotContainer.m_ArmPivotSubsystem.getSpeakerPose().getTranslation().minus(robotPose);
-  //  // return new Rotation2d(Math.atan2(diffPose.getY(), diffPose.getX()));
-  // }
-
-
-  public void stopModules() {
-    frontLeft.stop();
-    frontRight.stop();
-    rearRight.stop();
-    rearLeft.stop();
-  }
-
-  public WPI_Pigeon2 getPigeonSensor() {
-    return pigeonSensor;
-  }
-
-  public SwerveDriveKinematics getKinematics() {
-    return SwerveConstants.kinematics;
-  }
-
-
-/*The following is all  code that was added to try to selfdrive in autp */
-  // public Command goToNode(int apriltag, int node) {
-  //   Rotation2d heading;
-  //   Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
-  //   ChassisSpeeds currentSpeeds = getRobotRelativeChassisSpeeds();
-
-  //   double linearVel =
-  //       Math.sqrt(
-  //           (currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond)
-  //               + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
-
-
-  //   Translation2d goal = new Translation2d(
-  //       Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS,
-  //   nodeTrans.getY());
-  //   if (getPose().getY() > goal.getY()) {
-  //     heading = Rotation2d.fromDegrees(-90);
-  //   }
-  //   else {
-  //     heading = Rotation2d.fromDegrees(90);
-  //   }
-
-  //   PathPoint initialPoint = new PathPoint(
-  //     getPose().getTranslation(), heading, getPose().getRotation(), linearVel);
-  //   PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-  //       new PathConstraints(1, 1.5),
-  //       //PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
-  //       initialPoint,
-  //       new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
-  //                                                                                     // travel), holonomic rotation
-  //   //return followTrajectoryCommand(trajToGoal, false);
-  //  return AutoBuilder.followPath(trajToGoal);
-  // }
-
-
-
-  //     Different idea
-  //       Pose3d currentPose = getPose3d();
-  //       Pose3d tagPose = Vision.aprilTags.getTagPose(4).get();
-
-  //       return PathPlanner.generatePath(
-  //         PathConstraints(2.0, 4.0),
-  //         PathPoint(currentPose.translation, currentPose.rotation),
-  //         PathPoint(tagPose.translation.toTranslation2d() - Translation2d(2.0, 0.0), currentPose.rotation),
-  //       );
 
 }
 

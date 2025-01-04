@@ -19,8 +19,10 @@ import frc.robot.commands.Swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.ComputerVision.AprilTagSubsystem;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
+//import frc.robot.subsystems.ComputerVision.QuestNav;
 import frc.robot.subsystems.Drive.SelfDriving;
 import frc.robot.subsystems.Drive.SwerveBase;
+import frc.robot.subsystems.Drive.SwerveBasePose;
 import frc.robot.Constants.*;
 
 import java.util.function.BiFunction;
@@ -41,6 +43,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.*;
 
+// import dev.doglog.DogLog;
+// import dev.doglog.DogLogOptions;
+import edu.wpi.first.wpilibj.PowerDistribution;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -57,6 +63,8 @@ public class RobotContainer {
   public static LEDSubsystem m_led = new LEDSubsystem();
   public static SelfDriving m_selfDriving = new SelfDriving();
   public static NoteDetection m_note_detection = new NoteDetection();
+  //public static QuestNav m_quest_nav = new QuestNav();
+    public static SwerveBasePose m_swerveBasePose = new SwerveBasePose();
 
   //Defines all mChooser that will display in suffle board
   private SendableChooser<String> mChooser;

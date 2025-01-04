@@ -30,6 +30,9 @@ import frc.robot.subsystems.PowerDistributionPanel;
 import frc.robot.subsystems.ComputerVision.AprilTagSubsystem;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
 import frc.robot.subsystems.Drive.SwerveBase;
+import frc.robot.subsystems.Drive.SwerveModule;
+
+
 
 
 
@@ -43,17 +46,18 @@ import frc.robot.subsystems.Drive.SwerveBase;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-
-public double autoTime;
-public double startTimeAuto;
-public double currentTimeAuto;
-
-public double TeleOpTime;
-public double startTimeTeleOp;
-public double currentTimeTeleOp;
-
 public static RobotContainer m_robotContainer;
 
+
+  // Timer object to track elapsed time
+ private Timer Timer = new Timer();
+ public static double Time;
+ public static double autoTime;
+ public static double autoTimeFinal;
+ public static double teleopTime;
+ public static double teleopTimeFinal;
+ public static double startTime;
+ public static double currentTime;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -63,9 +67,6 @@ public static RobotContainer m_robotContainer;
   public void robotInit() {
     // Instantiate our RobotContainer.
     m_robotContainer = new RobotContainer(this);
-
-    
- 
 
    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
@@ -128,6 +129,8 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
 
     // Start AdvantageKit logger
     Logger.start();
+
+    
   }
 
   /**
@@ -145,6 +148,10 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
      m_robotContainer.SmartDashboardtoCommands();
+     //Clean up oculas messages
+     //m_robotContainer.m_quest_nav.cleanUpOculusMessages();
+     
+   
 
   }
 
@@ -171,20 +178,23 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-
-    startTimeAuto = Timer.getFPGATimestamp();
+    startTime = Timer.getFPGATimestamp();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
+    currentTime = Timer.getFPGATimestamp();
+    autoTime = currentTime - startTime;
+
       m_robotContainer.m_aprilTag.updatedPoseFromTagAuto();
   
-     currentTimeAuto =Timer.getFPGATimestamp();
-     autoTime = Math.abs(currentTimeAuto - startTimeAuto - 15);
-     NoteDetection.Time = autoTime;
-     SmartDashboard.putNumber("Time", Math.round(autoTime));
+
+     autoTimeFinal = Math.abs(15-autoTime);
+     NoteDetection.Time = autoTimeFinal;
+ 
+     SmartDashboard.putNumber("Time", Math.round(autoTimeFinal));
     }
 
 
@@ -195,14 +205,14 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
     // continue until interrupted by another command, remove
     // this line or comment it out.
 
-  
+  startTime = Timer.getFPGATimestamp();
 
    // m_robotContainer.m_ArmPivotSubsystem.setGoalPose();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+   
 
-     startTimeTeleOp = Timer.getMatchTime();
   }
 
   /** This function is called periodically during operator control. */
@@ -211,11 +221,12 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
    m_robotContainer.m_aprilTag.updatedPoseFromTagTeleOp();
    //m_robotContainer.m_aprilTag.MegaTag2();
 
+    currentTime = Timer.getFPGATimestamp();
+    teleopTime = currentTime - startTime;
    
-  currentTimeTeleOp = Timer.getMatchTime();
-  TeleOpTime = currentTimeTeleOp - startTimeTeleOp + 135;
-  NoteDetection.Time = TeleOpTime;
-  SmartDashboard.putNumber("Time", Math.round(TeleOpTime));
+  teleopTimeFinal = 135-teleopTime;
+  NoteDetection.Time = teleopTimeFinal;
+  SmartDashboard.putNumber("Time",  teleopTimeFinal);
   //System.out.println(SwerveBase.current9);
   }
 

@@ -11,7 +11,7 @@ import org.ejml.equation.ManagerFunctions.Input1;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
-
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -74,22 +74,26 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static final int sliderAxis = 3;
 
     /* Drivetrain Constants */// Measured from center of each module (wheel axis)
-    public static final double trackWidth = Units.inchesToMeters(21.5); 
-    public static final double wheelBase = Units.inchesToMeters(21.5);
+    public static final double trackWidth = Units.inchesToMeters(22.625); 
+    public static final double wheelBase = Units.inchesToMeters(22.625);
     public static final double robotRotationFactor = Math.sqrt(trackWidth*trackWidth + wheelBase*wheelBase);
 
     /* Wheel Diameter *///Try to get as accurate as possible to reduce error 
-    public static final double wheelDiameter = Units.inchesToMeters(3.8); 
+    public static final double wheelDiameter = Units.inchesToMeters(4); 
     public static final double wheelCircumference = wheelDiameter * Math.PI;
 
     /* Gear Ratio */
-    public static final double driveGearRatio = 6.12; // Mk4 drive ratio
-    public static final double angleGearRatio = 12.8; // Mk4 steer ratio   
+    public static final double driveGearRatio = 6.12; // Mk3 drive ratio
+    public static final double angleGearRatio = 12.8; // Mk3 steer ratio   
     
-    /* Swerve Profiling Values */
-    public static final double maxSpeed = 6.03504;//In meter/Second 
-    public static final double maxAngularVelocity = robotRotationFactor*Math.PI/maxSpeed*2*Math.PI;
-    
+    /* Swerve Profiling Values these value are all therotical if robot is not
+     * tacking as you wish or not finctioing properly please lower these number
+     * Also any time there is an update to the swerve base these value will need to be rcalibrated
+     */
+    public static final double maxSpeed = 5.21208;//In meter/Second  5.0292
+    public static final double maxAngularVelocity = maxSpeed/robotRotationFactor; //meter/sec to radian/sec
+    public static final double maxAcceleration = 8.59;
+
     /*Encoder Id's + Pigeon */
     public static final int frontLeftRotationEncoderId = 2;
     public static final int frontRightRotationEncoderId = 1;
@@ -115,15 +119,15 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static final int NormalPigeonOfSet = 0;
 
     /* TeleOp Swerve Constants *///Tune a little higher then what driver is confetable driving for Fast and normal
-    public static double kTeleDriveMaxSpeedMetersPerSecondFast = 5.5;//Try getting this value from Choreo
+    public static double kTeleDriveMaxSpeedMetersPerSecondFast = maxSpeed;//Try getting this value from Choreo
     public static double kTeleDriveMaxSpeedMetersPerSecondNormal = 2.0; 
     public static double kTeleDriveMaxSpeedMetersPerSecondSlow = 0.125;   
 
     public static double kTeleDriveMaxSpeedMetersPerSecond = kTeleDriveMaxSpeedMetersPerSecondNormal;  
-    public static double kTeleDriveMaxAccelerationUnitsPerSecond = 1.5;//Try getting this value from Choreo
+    public static double kTeleDriveMaxAccelerationUnitsPerSecond = maxAcceleration;//Try getting this value from Choreo
     
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = Math.PI;//Try getting this value from Choreo
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.0;//Try getting this value from Choreo
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kTeleDriveMaxSpeedMetersPerSecond/robotRotationFactor;//Try getting this value from Choreo
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = maxAcceleration/robotRotationFactor;//Try getting this value from Choreo
 
 
     /* Swerve Calibration
@@ -166,18 +170,112 @@ import frc.robot.subsystems.Drive.SwerveBase;
     // public static double rearRight_Drive_kP = 0.3473;//0.3473.3945
      //public static double rearRight_Rotation_kP = 0.5;
 
-    /*PIDs for Indivual Motors */
-    public static double frontLeft_Drive_kP = 14.1207;//14.1207
-    public static double frontLeft_Rotation_kP = 5.0;
+    /**PIDs for Indivual Motors 
+     * 
+     * While tuning first start with FF you can use the following links to 
+     * help get a starting value try get get all variable as close as posible
+     * 
+     * Drive-https://www.reca.lc/drive
+     *  When you use this cite please copy and pasta link to your project below so there may see the values you used
+     *
+     * Rotation- https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-turret.html
+     * You can read thought the following website and try to implment a FF contollor but as long as the
+     * wheel turn quickly in the durection we want and stay there this is a little less import that does not mean
+     * do not tak your time and make sure it is right.
+     */
+    public static PIDController frontLeft_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.1207
+    public static PIDController frontRight_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.1125
+    public static PIDController rearLeft_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.347
+    public static PIDController rearRight_Drive_PID = new PIDController(.219, 0.0, 0.00085432);//14.18//1.5//1.7//0.5, 0.0,0.00195052
+   //0.00901141 to much
+   //0.0090114 good ish  -6.5 2.31, 0.0, 0.0090114
+   //0.0090112 to little
+   
+    //It seem that kp and kv should be the same value
+    //How ever kd has to offset the uncertenty of kp so the wheel does not occilate. 0.0, 0.0, 0.0
 
-    public static double frontRight_Drive_kP = 14.1125;//14.1125
-    public static double frontRight_Rotation_kP = 5.0;
+    public static SimpleMotorFeedforward frontLeft_Drive_FF = new SimpleMotorFeedforward(0.13989,2.190,0.01);// 0.13989,2.190,0.01
+    public static SimpleMotorFeedforward frontRight_Drive_FF = new SimpleMotorFeedforward(0.1399,2.178,0.01);// 0.1399,2.178,0.01
+    public static SimpleMotorFeedforward rearLeft_Drive_FF = new SimpleMotorFeedforward(0.1399,2.220,0.01);// 0.1399,2.220,0.01
+    public static SimpleMotorFeedforward rearRight_Drive_FF = new SimpleMotorFeedforward(0.1399,2.190,0.01);//0.1399,2.190,0.01
 
-    public static double rearLeft_Drive_kP =  14.347;//14.347
-    public static double rearLeft_Rotation_kP = 5.0;
+    public static PIDController frontLeft_Rotation_PID = new PIDController(5.0, 0.0, 0.0);
+    public static PIDController frontRight_Rotation_PID = new PIDController(5.0, 0, 0);
+    public static PIDController rearLeft_Rotation_PID = new PIDController(5.0, 0, 0);
+    public static PIDController rearRight_Rotation_PID = new PIDController(5.0, 0, 0);
 
-    public static double rearRight_Drive_kP = 14.18;//14.18
-    public static double rearRight_Rotation_kP = 5.0;
+    public static SimpleMotorFeedforward frontLeft_Rotation_FF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+    public static SimpleMotorFeedforward frontRight_Rotation_FF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+    public static SimpleMotorFeedforward rearLeft_Rotation_FF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+    public static SimpleMotorFeedforward rearRight_Rotation_FF = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+
+
+/*
+ * Step-by-Step PID and FeedForward Tuning Plan for Robot Movement
+ * 
+ * 1. **Set Initial Values:**
+ *    - Start with zero for all PID and FeedForward gains:
+ *      - P = 0, I = 0, D = 0
+ *      - FeedForward velocity = 0, FeedForward acceleration = 0
+ *      - Static FeedForward (`ks`) = 0
+ * 
+ * 2. **Tune Static FeedForward (`ks`) for Low-Speed Movement:**
+ *    - `ks` compensates for static friction and ensures the robot can overcome it and start moving.
+ *    - Set `ks` to a small value (e.g., `ks = 0.01`), then gradually increase it if the robot hesitates or stalls at low speeds.
+ *    - The goal is to get the robot to move smoothly at low speeds without stuttering or excessive torque.
+ *    - Adjust `ks` until the robot starts moving from rest with smooth and controlled acceleration.
+ * 
+ * 3. **Tune FeedForward (Velocity and Acceleration):**
+ *    - After static friction is overcome, tune the FeedForward velocity and acceleration gains.
+ *    - Start by adjusting the FeedForward velocity term (e.g., from 0.1 to 0.2), testing the robot’s response to varying speeds.
+ *    - Adjust FeedForward acceleration for smoother starts from a standstill.
+ *    - The robot should accelerate and decelerate smoothly without oscillations or large delays.
+ * 
+ * 4. **Tune Proportional Gain (P):**
+ *    - Set I = 0 and D = 0, and focus on tuning **P** first to control the robot’s responsiveness.
+ *    - Start with a small P-gain (e.g., P = 0.1) and gradually increase it to eliminate sluggishness and improve speed accuracy.
+ *    - Ensure there’s no overshoot or oscillation; if overshoot happens, reduce P.
+ * 
+ * 5. **Tune Integral Gain (I):**
+ *    - After adjusting **P**, set D = 0 and tune **I** to minimize steady-state error (small persistent errors).
+ *    - Start with a small value for **I** (e.g., I = 0.01) and increase it until any small drift is corrected.
+ *    - Watch for wind-up (large I value), which could cause overshoot or instability.
+ * 
+ * 6. **Tune Derivative Gain (D):**
+ *    - Set **I = 0** and focus on **D** to smooth out any overshoot or oscillations caused by **P**.
+ *    - Gradually increase **D** to stabilize the motor response.
+ *    - If the robot becomes sluggish or noisy, reduce **D** until smooth control is achieved.
+ * 
+ * 7. **Test on Ground and Adjust for Motor Interaction:**
+ *    - After tuning off-ground, test the robot on the ground to account for real-world friction and weight distribution.
+ *    - Fine-tune **FeedForward velocity** and **acceleration** as necessary for optimal on-ground performance.
+ *    - If motors interfere with each other (e.g., one motor affects the other’s response), adjust the PID values to ensure balanced performance.
+ * 
+ * **To Make Tuning Values Work on the Ground:**
+ *    - The **ground effect** changes motor behavior due to increased friction, weight distribution, and possible coupling between the wheels.
+ *    - **Start with the off-ground tuned values** (such as `ks`, FeedForward, and PID gains) and test them on the ground.
+ *    - **If the robot is too slow to start** or struggles to move, increase **`ks`** slightly to compensate for the additional friction of the ground.
+ *    - **FeedForward adjustments** might also be necessary:
+ *      - If the robot accelerates too slowly or drags, increase **FeedForward velocity** and **FeedForward acceleration**.
+ *      - If the robot accelerates too quickly or jerks, slightly decrease the FeedForward values.
+ *    - **PID gains** may also need slight adjustments:
+ *      - If the robot oscillates or overshoots, reduce **P** or increase **D**.
+ *      - If the robot drifts or struggles to hold a consistent speed, increase **I** to reduce steady-state error.
+ *    - Keep an eye on **motor interaction**; if one motor is affecting the other (e.g., one motor is not reacting as expected due to ground friction or loading), adjust the PID parameters for each motor individually, if your system allows for that.
+ *    - For **two-wheel drive robots** or other setups, sometimes adjusting the left and right motor PID terms separately is necessary to account for slight asymmetries in wheel friction or motor response.
+ * 
+ * 8. **Verify High-Speed Performance:**
+ *    - After fine-tuning at low speeds, test the robot at higher speeds (e.g., 50%-100% of max speed).
+ *    - Ensure the robot accelerates, decelerates, and holds a straight path without oscillations or excessive overshoot.
+ * 
+ * 9. **Repeat as Needed:**
+ *    - Revisit any of the previous steps if issues arise in different conditions (e.g., varying surfaces or loads).
+ * 
+ * By following this approach, you start by tuning **static FeedForward (`ks`)** first, ensuring smooth low-speed movement before focusing on dynamic control with **PID** and **FeedForward** terms. The final tuning step of testing on the ground ensures that real-world factors such as friction, weight distribution, and motor interaction are accounted for.
+ */
+
+
+
 
     /* Calibration Factor to Help offest for weight start with this at one*/
     public static double calibrationFactorSB = 1.0;//1.11
