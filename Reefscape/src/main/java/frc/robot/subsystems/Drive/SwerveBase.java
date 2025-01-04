@@ -12,6 +12,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -24,16 +25,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPoint;
+//import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.path.PathConstraints;
+//import com.pathplanner.lib.path.PathPoint;
 
 
 import frc.robot.Constants.*;
 
 import java.sql.Driver;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.sim.Pigeon2SimState;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,6 +45,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.Constants;
 import dev.doglog.DogLog;
 
@@ -52,7 +55,7 @@ import dev.doglog.DogLog;
 public class SwerveBase extends SubsystemBase { 
   
   // Declare a PigeonIMU object and a motor for demonstration purposes
-  private PigeonIMU pigeonIMU;
+  private Pigeon2 pigeonIMU;
 
   // Declare variables to store IMU data
   private double[] imuData = new double[3]; // [yaw, pitch, roll]
@@ -92,7 +95,7 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
   public SwerveBase() {
 
     // Initialize the PigeonIMU connected to CAN ID 1 (adjust as necessary)
-    pigeonIMU = new PigeonIMU(Constants.SwerveConstants.PIGEON_SENSOR_ID);
+    pigeonIMU = new Pigeon2(Constants.SwerveConstants.PIGEON_SENSOR_ID);
     zeroPigeonYaw();
 
     // initialize the rotation offsets for the CANCoders
@@ -150,8 +153,16 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
 
 // Method to get the yaw value (heading) from the IMU
 public double getPigeonYaw() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[0];  // Return the yaw value (heading in degrees)
+   // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
+  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
+  
+  return currentPosition.getZ();
+  
+
+  // Old Code
+  //return pigeonIMU.getAngle();  // Return the yaw value (heading in degrees)
+  // pigeonIMU.(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
+  //return imuData[0];  // Return the yaw value (heading in degrees)
 }
 
 public double getPigeonYawRate(){
@@ -181,19 +192,38 @@ public double getPigeonYawRate(){
 
 // Method to get the pitch value from the IMU
 public double getPigeonPitch() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[1];  // Return the pitch value (in degrees)
+  // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
+  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
+  
+  return currentPosition.getY();
+  
+  // Old Code
+  //pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
+  //return imuData[1];  // Return the pitch value (in degrees)
 }
 
 // Method to get the roll value from the IMU
 public double getPigeonRoll() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
-  return imuData[2];  // Return the roll value (in degrees)
+  // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
+  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
+  
+  return currentPosition.getX();
+  
+  // Old Code
+  //pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data from the IMU
+  //return imuData[2];  // Return the roll value (in degrees)
 }
 
 public Rotation2d getGyroscopeRotation() {
-  pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data
-  return Rotation2d.fromDegrees(imuData[0]);   // Return the yaw value which represents the compass heading
+  // WARNING!!! I am not sure if this is returning the correct value!
+
+  // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
+  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
+  
+  return currentPosition.toRotation2d();
+   // Old Code
+  //pigeonIMU.getYawPitchRoll(imuData);  // Fetch the latest yaw, pitch, and roll data
+  //return Rotation2d.fromDegrees(imuData[0]);   // Return the yaw value which represents the compass heading
 }
 
   //to be used for Driving the robot the heading whille be temparrly set to zero when driving in robot centric
