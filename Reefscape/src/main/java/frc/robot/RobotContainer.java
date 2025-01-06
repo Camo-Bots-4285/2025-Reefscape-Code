@@ -23,7 +23,12 @@ import frc.robot.subsystems.ComputerVision.NoteDetection;
 import frc.robot.subsystems.Drive.SelfDriving;
 import frc.robot.subsystems.Drive.SwerveBase;
 import frc.robot.subsystems.Drive.SwerveBasePose;
+import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmExtention;
+import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmPivot;
+import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmSubsystem;
+import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmWrist;
 import frc.robot.Constants.*;
+import frc.robot.subsystems.MechanicalSystems.*;
 
 import java.util.function.BiFunction;
 import java.util.function.DoubleSupplier;
@@ -47,6 +52,8 @@ import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 import edu.wpi.first.wpilibj.PowerDistribution;
 
+
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -57,6 +64,14 @@ import edu.wpi.first.wpilibj.PowerDistribution;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // Declare subsystems
+    public static ArmSubsystem m_armSubsystem;
+    public static ArmWrist m_wristSubsystem;
+    public static ArmPivot m_pivotSubsystem;
+    public static ArmExtention m_extensionSubsystem;
+
+
+
   // The robot's subsystems and commands are defined here...
   public static SwerveBase m_swerveBase = new SwerveBase();
     public static AprilTagSubsystem m_aprilTag = new AprilTagSubsystem();
@@ -64,7 +79,8 @@ public class RobotContainer {
     public static SelfDriving m_selfDriving = new SelfDriving();
     public static NoteDetection m_note_detection = new NoteDetection();
     //public static QuestNav m_quest_nav = new QuestNav();
-      public static SwerveBasePose m_swerveBasePose = new SwerveBasePose();
+    public static SwerveBasePose m_swerveBasePose = new SwerveBasePose();
+    public static ArmSubsystem m_arm = new ArmSubsystem(m_pivotSubsystem, m_extensionSubsystem, m_wristSubsystem);
   
     //Defines all mChooser that will display in suffle board
     private SendableChooser<String> mChooser;
@@ -266,6 +282,15 @@ public class RobotContainer {
        btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(10)));
        btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
        btn_self_driving_shoot.whileTrue(new LaneLogicIn(m_swerveBase));
+
+       //Examples command that will call the arm to score on L4 then go back to home when done
+       //TODO Map the following command sytle using the value even by the co-drive make sure
+       //to make it easy to use and add a button that turn SelfDriving off
+       //I think what you want is a 
+      //  btn_self_driving_shoot = new JoystickButton(driverJoystick, 4);
+      //  btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_arm.setDisinatedPosition(ArmConstants.L4)));
+      //  btn_self_driving_shoot.onFalse(new RunCommand(() -> m_arm.setDisinatedPosition(ArmConstants.Home)));
+
   
   
       

@@ -132,7 +132,7 @@ public class SwerveBasePose extends SwerveBase {
     //         },
     //         this // Reference to this subsystem to set requirements
     // );
-}
+  }
   public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
   private final double SCALE_X = -1/0.9;
   private final double SCALE_Y = -1/0.9;

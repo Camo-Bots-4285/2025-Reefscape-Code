@@ -374,6 +374,143 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
   }
 
+  public static final class ArmConstants {
+    //Arm Stander Values
+    public static final int Home = -1;
+
+    // Coral Placing Values
+    public static final int L1 = 1;
+    public static final int L2 = 2;
+    public static final int L3 = 3;
+    public static final int L4 = 4;
+
+    // Coral Intake Values
+    public static final int Coral_Intake_Bot = 5;
+    public static final int Coral_Intake_Feederstation = 6;
+
+    //Algae Placing Values
+    public static final int Barge = 7;
+    public static final int Processor = 8;
+
+    //Algae Intake Values
+    public static final int Algae_1 = 9;
+    public static final int Algae_2 = 10;
+    public static final int Algae_Intake_Floor = 11;
+    public static final int Algae_Intake_Robot = 12;
+
+
+
+     //Arm Value Position
+     public static final double Home_Pivot = 0.0;
+     public static final double Home_Extention = 0.0;
+     public static final double Home_Wrist = 0.0;
+
+
+
+     public static final double L1_Pivot = 0.0;
+     public static final double L1_Extention = 0.0;
+     public static final double L1_Wrist = 0.0;
+
+     public static final double L2_Pivot = 0.0;
+     public static final double L2_Extention = 0.0;
+     public static final double L2_Wrist = 0.0;
+
+     public static final double L3_Pivot = 0.0;
+     public static final double L3_Extention = 0.0;
+     public static final double L3_Wrist = 0.0;
+
+     public static final double L4_Pivot = 0.0;
+     public static final double L4_Extention = 0.0;
+     public static final double L4_Wrist = 0.0;
+
+
+
+     public static final double Coral_Intake_Bot_Pivot = 0.0;
+     public static final double Coral_Intake_Bot_Extention = 0.0;
+     public static final double Coral_Intake_Bot_Wrist = 0.0;
+
+     public static final double Coral_Intake_Feederstation_Pivot = 0.0;
+     public static final double Coral_Intake_Feederstation_Extention = 0.0;
+     public static final double Coral_Intake_Feederstation_Wrist = 0.0;
+
+
+
+     public static final double Barge_Pivot = 0.0;
+     public static final double Barge_Extention = 0.0;
+     public static final double Barge_Wrist = 0.0;
+
+     public static final double Processor_Pivot = 0.0;
+     public static final double Processor_Extention = 0.0;
+     public static final double Processor_Wrist = 0.0;
+
+
+
+    public static final double Algae_1_Pivot = 0.0;
+    public static final double Algae_1_Extention = 0.0;
+    public static final double Algae_1_Wrist = 0.0;
+
+    public static final double Algae_2_Pivot = 0.0;
+    public static final double Algae_2_Extention = 0.0;
+    public static final double Algae_2_Wrist = 0.0;
+
+    public static final double Algae_Intake_Floor_Pivot = 0.0;
+    public static final double Algae_Intake_Floor_Extention = 0.0;
+    public static final double Algae_Intake_Floor_Wrist = 0.0;
+
+    public static final double Algae_Intake_Robot_Pivot = 0.0;
+    public static final double Algae_Intake_Robot_Extention = 0.0;
+    public static final double Algae_Intake_Robot_Wrist = 0.0;
+
+
+
+
+        //Physical Constants
+        public static final double Pivot_GearRatio = 0.0;
+
+        public static final double Extention_GearRatio = 0.0;
+
+        public static final double Wrist_GearRatio = 0.0;
+
+        public static final double Minipulator_GearRatio = 0.0;
+        public static final double Minipulator_WheelRadius = 0.0;
+
+
+  }
+
+  public static final class IntakeConstants {
+    //Like the example above set the game piece and and positon of intatke
+    //I would recommend 0 for no prefernce 1 for coral and 2 for algae
+    public static final int All_Floor = 1;    
+
+    public static final int Coral_Floor = 1;
+    public static final int Coral_Robot = 2;
+
+    public static final int Algae_Floor = 3;
+    public static final int Algae_Robot = 4;
+
+    public static final int Home_Intake = 5;
+
+
+    //Physical Constants gear ratios and Rdius should be used to make tip speeds match meanin the cames piece
+    //shouldnot spin but some derectly into the robot
+    public static final double MovementMotor_GearRatio = 0.0;
+
+    public static final double CoralMotor_GearRatio = 0.0;
+    public static final double CoralMotor_Radius = 0.0;
+
+    public static final double MiddletMotor_GearRatio = 0.0;
+    public static final double MiddletMotor_Radius = 0.0;
+
+    public static final double AlgaeMotor_GearRatio = 0.0;
+    public static final double AlgaeMotor_Radius = 0.0;
+
+
+
+
+  }
+
+
+
   public static class LEDConstants {
       public static final int DIO_LED_IS_BLUE = 4;
       public static final int DIO_LED_IS_RED = 5;

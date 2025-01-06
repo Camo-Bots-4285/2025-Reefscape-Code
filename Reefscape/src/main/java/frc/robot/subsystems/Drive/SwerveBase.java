@@ -153,9 +153,9 @@ public void setTeleOpMaxSwerveSpeed(double speed) {
 
 // Method to get the yaw value (heading) from the IMU
 public double getPigeonYaw() {
-   // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
-  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
-  
+  // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
+  Rotation3d currentPosition = pigeonIMU.getRotation3d();
+
   return currentPosition.getZ();
   
 
@@ -193,8 +193,8 @@ public double getPigeonYawRate(){
 // Method to get the pitch value from the IMU
 public double getPigeonPitch() {
   // use pigeonIMU.getRotation3d() and put it in a variable named currentPosition
-  Rotation3d currentPosition = pigeonIMU.getRotation3d(); 
-  
+  Rotation3d currentPosition = pigeonIMU.getRotation3d();
+
   return currentPosition.getY();
   
   // Old Code
