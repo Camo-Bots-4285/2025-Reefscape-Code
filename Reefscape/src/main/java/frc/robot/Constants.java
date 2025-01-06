@@ -166,7 +166,7 @@ import frc.robot.subsystems.Drive.SwerveBase;
     // public static double rearLeft_Rotation_kP = 0.5;
 
     // public static double rearRight_Drive_kP = 0.3473;//0.3473.3945
-     //public static double rearRight_Rotation_kP = 0.5;
+    //  public static double rearRight_Rotation_kP = 0.5;
 
     /**PIDs for Indivual Motors 
      * 
@@ -184,7 +184,9 @@ import frc.robot.subsystems.Drive.SwerveBase;
     public static PIDController frontLeft_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.1207
     public static PIDController frontRight_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.1125
     public static PIDController rearLeft_Drive_PID = new PIDController(0.0, 0.0, 0.0);//14.347
-    public static PIDController rearRight_Drive_PID = new PIDController(.219, 0.0, 0.00085432);//14.18//1.5//1.7//0.5, 0.0,0.00195052
+    // Changed to test
+    public static PIDController rearRight_Drive_PID = new PIDController(0.0, 0.0, 0.0);
+    //public static PIDController rearRight_Drive_PID = new PIDController(.219, 0.0, 0.00085432);//14.18//1.5//1.7//0.5, 0.0,0.00195052
    //0.00901141 to much
    //0.0090114 good ish  -6.5 2.31, 0.0, 0.0090114
    //0.0090112 to little

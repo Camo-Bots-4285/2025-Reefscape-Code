@@ -35,6 +35,10 @@
  *  2) Test genral funciality of code does the pose to pose system work
  *              You can does this my first make sure the x and y axis that is defined in the code is correct
  *  3) Test setting postion allow the QuestNav to be rest and see it it does it correctly
+ * 
+ * 
+ * 
+ * Chief Delphi Post: Quest Nav "Solving robot odometry problems with the Oculus Quest"
  */
 
 

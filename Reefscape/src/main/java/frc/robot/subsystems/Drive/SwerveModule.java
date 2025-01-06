@@ -4,6 +4,7 @@ import java.lang.module.Configuration;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.core.*;
+import com.ctre.phoenix6.mechanisms.swerve.*;
 
 // Old Modules from older phoenix
 //import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -165,7 +166,7 @@ public class SwerveModule extends SubsystemBase {
     rotationConfig.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 
     // Set the time (in seconds) the motor can run at peak current before limiting kicks in
-    rotationConfig.CurrentLimits.SupplyCurrentLowerLimit = 1.0; // 1 second
+    rotationConfig.CurrentLimits.SupplyCurrentLowerTime = 1.0; // 1 second
 
     //Applies current limitor
     rotationMotor.getConfigurator().apply(rotationConfig);
@@ -203,20 +204,6 @@ public class SwerveModule extends SubsystemBase {
 
     DrivePID = drivePID;
     DriveFF = driveFF;
-  
-
-
-
-
-
-
-
-
-
-    
-
-
-
 
 
 // // Set profiled position with motion profiling (gear ratio consideration)
@@ -260,13 +247,18 @@ public class SwerveModule extends SubsystemBase {
     // configure the CANCoder to output in unsigned (wrap around from 360 to 0
     // degrees)
    
-    // TODO - I cannot find where this is set in phoenix 
+
+
+    // Pretty sure we need to to change the method compared to v5 -- Fixed
     //canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    
+    MagnetSensorConfigs magnetConfig = new MagnetSensorConfigs();
+    magnetConfig.withAbsoluteSensorDiscontinuityPoint(1);
 
-  
-
-  
-    }
+    // Apply the configuration to make the CANCoder wrap around from 360 to 0 degrees
+    canCoder.getConfigurator().apply(magnetConfig);
+    
+  }
 
 
 
@@ -284,8 +276,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public Rotation2d getCanCoderAngle() {
-
-    double unsignedAngle = (canCoder.getAbsolutePosition().getValueAsDouble() - offset.getRadians())
+    // This was changed from the original possibly the reason for the drive error?   
+    double unsignedAngle = (Units.degreesToRadians(canCoder.getPosition().getValueAsDouble()) - offset.getRadians())
         % (2 * Math.PI);
 
     return new Rotation2d(unsignedAngle);
@@ -348,8 +340,7 @@ public class SwerveModule extends SubsystemBase {
   // position)
   // measured by the CANCoder
   public void initRotationOffset() {
-
-    rotationMotor.setPosition/*(Units.rotationsToRadians*/(getCanCoderAngle().getRotations()* SwerveConstants.angleGearRatio);
+    rotationMotor.setPosition(Units.rotationsToRadians(getCanCoderAngle().getRotations() * SwerveConstants.angleGearRatio));
     //rotationEncoder.setPosition(getCanCoderAngle().getRadians());
   }
 
@@ -392,56 +383,6 @@ public class SwerveModule extends SubsystemBase {
    * SwerveModuleState object that holds a desired linear and rotational setpoint
    * Uses PID and a feedforward to control the output
    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
