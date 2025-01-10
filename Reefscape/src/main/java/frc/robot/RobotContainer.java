@@ -29,6 +29,7 @@ import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmSubsystem;
 import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmWrist;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.MechanicalSystems.*;
+import frc.robot.subsystems.ComputerVision.*;
 
 import java.util.function.BiFunction;
 import java.util.function.DoubleSupplier;
@@ -78,7 +79,7 @@ public class RobotContainer {
     public static LEDSubsystem m_led = new LEDSubsystem();
     public static SelfDriving m_selfDriving = new SelfDriving();
     public static NoteDetection m_note_detection = new NoteDetection();
-    //public static QuestNav m_quest_nav = new QuestNav();
+    public static QuestNav m_quest_nav = new QuestNav();
     public static SwerveBasePose m_swerveBasePose = new SwerveBasePose();
     public static ArmSubsystem m_arm = new ArmSubsystem(m_pivotSubsystem, m_extensionSubsystem, m_wristSubsystem);
   
@@ -109,6 +110,8 @@ public class RobotContainer {
       private JoystickButton btn_faster_swerve;
     private JoystickButton btn_self_driving_shoot;
     private JoystickButton btn_PID_Tune_1;
+    private JoystickButton btn_zero_Heading;
+    private JoystickButton btn_zero_Oculus;
   
   
     private DoubleSupplier limit;
@@ -271,11 +274,18 @@ public class RobotContainer {
   
       //Auto drive to estimated note pose
       // btn_auto_pickup = new JoystickButton(driverJoystick, 4);
-      // btn_auto_pickup.whileTrue(new MoveToNotePose(m_swerveBase));
+      //btn_auto_pickup.whileTrue(new MoveToNotePose(m_swerveBase));
       // btn_auto_pickup.whileTrue(new FloorFeederTest(m_intake));
       // btn_auto_pickup.whileTrue(new ArmPivotErrected(m_ArmPivotSubsystem));
       // btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
       // btn_auto_pickup.whileTrue(new RunCommand(() -> m_note_detection.FindTheNotes()));
+
+       btn_zero_Heading = new JoystickButton(streamdeck, 11);
+       btn_zero_Heading.whileTrue(new RunCommand(() -> m_quest_nav.zeroHeading()));
+
+       btn_zero_Oculus = new JoystickButton(streamdeck, 12);
+       btn_zero_Oculus.whileTrue(new RunCommand(() -> m_quest_nav.zeroOculus()));
+
   
       
        btn_self_driving_shoot = new JoystickButton(driverJoystick, 3);

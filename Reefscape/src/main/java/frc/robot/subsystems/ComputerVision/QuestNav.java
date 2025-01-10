@@ -323,7 +323,7 @@ private Translation2d resetTranslationValue = new Translation2d(0, 0);
   @Override
   public void periodic() {
    //Runs DogLog to log values to USB
-   DogLog();
+   //DogLog();
 
     //These two should be the same thing
     SmartDashboard.putString("RobotOdometry_FormOculus1",getHeadsetPoseToFeildOdometry().toString());
@@ -333,7 +333,13 @@ private Translation2d resetTranslationValue = new Translation2d(0, 0);
     SmartDashboard.putString("RobotOdometry_OculusPose1",getFeildPoseToHeadSetOdometry(getHeadsetPoseToFeildOdometry(getOculusPoseRaw())).toString());
     SmartDashboard.putString("RobotOdometry_OculusPose2",getOculusPoseRaw().toString());
 
-        SmartDashboard.putString("RobotOdometry_Final", getRobotOdometry().toString());
+    SmartDashboard.putString("RobotOdometry_Final", getRobotOdometry().toString());
+
+    SmartDashboard.putNumber("RobotOdomotry_QuestNaxXAxis", getOculusX());
+    SmartDashboard.putNumber("RobotOdomotry_QuestNaxYAxis", getOculusY());
+    SmartDashboard.putNumber("RobotOdomotry_QuestNaxYaw", getOculusYaw());
+
+    SmartDashboard.putString("RobotOdomotry_QuestNavInitalPose", getOculusPoseRaw().toString());
 
 
     // Logger.recordOutput("SwerveOdometry", odometry_QuestNav.getPoseMeters());
