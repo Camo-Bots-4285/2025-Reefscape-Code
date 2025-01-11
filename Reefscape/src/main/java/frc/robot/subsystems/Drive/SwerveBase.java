@@ -3,8 +3,15 @@ package frc.robot.subsystems.Drive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.FloatArraySubscriber;
+import edu.wpi.first.networktables.IntegerPublisher;
+import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.subsystems.ComputerVision.QuestNav;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
@@ -53,6 +60,8 @@ import dev.doglog.DogLog;
 
 
 public class SwerveBase extends SubsystemBase { 
+
+    private QuestNav questnav = new QuestNav();
   
   // Declare a PigeonIMU object and a motor for demonstration purposes
   private Pigeon2 pigeonIMU;
@@ -411,8 +420,20 @@ public Rotation2d getGyroscopeRotation() {
 /**
  * The following is the periodic loop that record necisary varibales
  */
+
+   // Clean up questnav subroutine messages after processing on the headset
+   public void cleanUpQuestNavMessages() {
+    questnav.cleanUpQuestNavMessages();
+  }
+
+
  @Override
   public void periodic() {
+
+
+    questnav.getPose();
+    questnav.connected();
+
     //Runs DogLog to log values to USB
     DogLog();
 
@@ -424,6 +445,8 @@ public Rotation2d getGyroscopeRotation() {
     SmartDashboard.putNumber("RotationMotorRL", rearLeft.getIntegratedAngle().getRotations());
     SmartDashboard.putNumber("RotationMotorFR", frontRight.getIntegratedAngle().getRotations());
     SmartDashboard.putNumber("RotationMotorFL", frontLeft.getIntegratedAngle().getRotations());
+    SmartDashboard.putString("QuestNavPose",questnav.getPose().toString());
+    SmartDashboard.putBoolean("QuestNavConnected", questnav.connected());
 
     // SmartDashboard.putString("Pigeon Rotation",
     // pigeonSensor.getRotation2d().toString());
@@ -550,15 +573,6 @@ public Rotation2d getGyroscopeRotation() {
   public void robotRelativeDrive(ChassisSpeeds speeds){
     setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
   }
-
-
-
-
-
-
-
-
-
 
 
 

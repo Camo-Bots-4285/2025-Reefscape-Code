@@ -19,7 +19,7 @@ import frc.robot.commands.Swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.ComputerVision.AprilTagSubsystem;
 import frc.robot.subsystems.ComputerVision.NoteDetection;
-//import frc.robot.subsystems.ComputerVision.QuestNav;
+import frc.robot.subsystems.ComputerVision.QuestNav;
 import frc.robot.subsystems.Drive.SelfDriving;
 import frc.robot.subsystems.Drive.SwerveBase;
 import frc.robot.subsystems.Drive.SwerveBasePose;
@@ -28,7 +28,7 @@ import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmPivot;
 import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmSubsystem;
 import frc.robot.subsystems.MechanicalSystems.ArmSubsystem.ArmWrist;
 import frc.robot.Constants.*;
-import frc.robot.subsystems.MechanicalSystems.*;
+//import frc.robot.subsystems.MechanicalSystems.*;
 import frc.robot.subsystems.ComputerVision.*;
 
 import java.util.function.BiFunction;
@@ -74,12 +74,11 @@ public class RobotContainer {
 
 
   // The robot's subsystems and commands are defined here...
-  public static SwerveBase m_swerveBase = new SwerveBase();
+    public final SwerveBase m_swerveBase;
     public static AprilTagSubsystem m_aprilTag = new AprilTagSubsystem();
     public static LEDSubsystem m_led = new LEDSubsystem();
     public static SelfDriving m_selfDriving = new SelfDriving();
     public static NoteDetection m_note_detection = new NoteDetection();
-    public static QuestNav m_quest_nav = new QuestNav();
     public static SwerveBasePose m_swerveBasePose = new SwerveBasePose();
     public static ArmSubsystem m_arm = new ArmSubsystem(m_pivotSubsystem, m_extensionSubsystem, m_wristSubsystem);
   
@@ -149,6 +148,7 @@ public class RobotContainer {
     public RobotContainer(Robot robot) {
       m_robot = robot;
   
+      m_swerveBase = new SwerveBase();
       // //Start DogLog
       // DogLog.setOptions(new DogLogOptions().withNtPublish(true));
       // DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
@@ -280,11 +280,11 @@ public class RobotContainer {
       // btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
       // btn_auto_pickup.whileTrue(new RunCommand(() -> m_note_detection.FindTheNotes()));
 
-       btn_zero_Heading = new JoystickButton(streamdeck, 11);
-       btn_zero_Heading.whileTrue(new RunCommand(() -> m_quest_nav.zeroHeading()));
+      //  btn_zero_Heading = new JoystickButton(streamdeck, 11);
+      //  btn_zero_Heading.whileTrue(new RunCommand(() -> m_quest_nav.zeroHeading()));
 
        btn_zero_Oculus = new JoystickButton(streamdeck, 12);
-       btn_zero_Oculus.whileTrue(new RunCommand(() -> m_quest_nav.zeroOculus()));
+       //btn_zero_Oculus.whileTrue(new RunCommand(() -> m_quest_nav.zeroOculus()));
 
   
       
